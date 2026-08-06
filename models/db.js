@@ -27,14 +27,17 @@ export const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000
     },
-    dialectOptions: {
-      supportBigNumbers: true,
-      bigNumberStrings: true,
-      ssl: 'Amazon RDS',
-      waitForConnections: true,
-      enableKeepAlive: true,
-      decimalNumbers: true,
-    },
+   dialectOptions: {
+  supportBigNumbers: true,
+  bigNumberStrings: true,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  waitForConnections: true,
+  enableKeepAlive: true,
+  decimalNumbers: true,
+},
+
   }
 );
 
