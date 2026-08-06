@@ -250,6 +250,13 @@
                   View
                 </button>` : ''}
               ${event.status === 'Approved' ? `
+                <button onclick="openAttendanceModal(${event.id}, '${event.event_title}')"
+                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-lg text-xs font-semibold transition">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  </svg>
+                  Attendance
+                </button>
                 <span class="inline-flex items-center gap-1 px-3 py-1.5 ${event.is_expired ? 'bg-gray-100 text-gray-500' : 'bg-green-50 text-green-700'} rounded-lg text-xs font-semibold">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -382,9 +389,200 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProposal(); });
   </script>
 
+  <!-- Attendance Modal -->
+  <div id="attendanceModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden" style="max-height:90vh;">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+        <div>
+          <h3 class="font-bold text-gray-900 text-lg">Attendance Tracking</h3>
+          <p class="text-xs text-gray-500 mt-1" id="attendanceEventTitle">Event Title</p>
+        </div>
+        <button onclick="closeAttendanceModal()" class="p-1.5 hover:bg-gray-100 rounded-lg transition text-gray-500 hover:text-gray-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex-shrink-0">
+        <div class="grid grid-cols-4 gap-3 text-center">
+          <div class="bg-white rounded-lg p-3 border border-gray-200">
+            <div class="text-xl font-bold text-gray-900" id="totalStats">0</div>
+            <div class="text-xs text-gray-500 font-medium">Total</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-blue-200">
+            <div class="text-xl font-bold text-blue-600" id="registeredStats">0</div>
+            <div class="text-xs text-gray-500 font-medium">Registered</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-green-200">
+            <div class="text-xl font-bold text-green-600" id="attendedStats">0</div>
+            <div class="text-xs text-gray-500 font-medium">Attended</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-purple-200">
+            <div class="text-xl font-bold text-purple-600" id="attendanceRateStats">0%</div>
+            <div class="text-xs text-gray-500 font-medium">Attendance %</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants List -->
+      <div class="flex-1 overflow-y-auto" id="participantsList" style="min-height:0;">
+        <div class="p-6 text-center text-gray-500">
+          <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="text-sm">Loading participants...</p>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2 flex-shrink-0 bg-gray-50">
+        <button onclick="closeAttendanceModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-sm font-semibold transition">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <style>
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   </style>
+
+  <script>
+    let currentEventId = null;
+    const userId = "{{user.id}}";
+
+    async function openAttendanceModal(eventId, eventTitle) {
+      currentEventId = eventId;
+      const modal = document.getElementById('attendanceModal');
+      document.getElementById('attendanceEventTitle').textContent = eventTitle;
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      
+      // Load participants and stats
+      await loadAttendanceData(eventId);
+    }
+
+    function closeAttendanceModal() {
+      const modal = document.getElementById('attendanceModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+      currentEventId = null;
+    }
+
+    async function loadAttendanceData(eventId) {
+      const participantsList = document.getElementById('participantsList');
+      
+      try {
+        // Fetch participants
+        const participantsRes = await fetch(`/api/attendance/participants/${eventId}?organizerId=${userId}`);
+        if (!participantsRes.ok) {
+          throw new Error('Failed to fetch participants');
+        }
+        const participantsData = await participantsRes.json();
+        const participants = participantsData.participants || [];
+
+        // Fetch stats
+        const statsRes = await fetch(`/api/attendance/stats?eventId=${eventId}&organizerId=${userId}`);
+        const statsData = statsRes.ok ? await statsRes.json() : { stats: {} };
+        const stats = statsData.stats || {};
+
+        // Update stats
+        document.getElementById('totalStats').textContent = stats.total || 0;
+        document.getElementById('registeredStats').textContent = stats.registered || 0;
+        document.getElementById('attendedStats').textContent = stats.attended || 0;
+        document.getElementById('attendanceRateStats').textContent = stats.attendanceRate || '0%';
+
+        // Render participants
+        if (participants.length === 0) {
+          participantsList.innerHTML = `
+            <div class="p-8 text-center">
+              <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <p class="text-gray-500 text-sm">No participants yet</p>
+            </div>`;
+          return;
+        }
+
+        participantsList.innerHTML = participants.map(p => `
+          <div class="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition flex items-center justify-between">
+            <div class="flex-1">
+              <div class="font-semibold text-gray-900 text-sm">${p.name}</div>
+              <div class="text-xs text-gray-500 mt-0.5">${p.email}</div>
+              <div class="flex gap-2 mt-2 text-xs">
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded">Course: ${p.course || 'N/A'}</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded">Year: ${p.year || 'N/A'}</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded">${p.department || 'N/A'}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              ${p.status === 'attended' ? `
+                <span class="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-xs font-semibold">✓ Attended</span>
+                <button onclick="toggleAttendance(${p.participantId}, ${eventId}, false)"
+                   class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-xs font-semibold transition">
+                  Unmark
+                </button>
+              ` : `
+                <span class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold">○ Registered</span>
+                <button onclick="toggleAttendance(${p.participantId}, ${eventId}, true)"
+                   class="px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-xs font-semibold transition">
+                  Mark Attended
+                </button>
+              `}
+            </div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error loading attendance data:', error);
+        participantsList.innerHTML = `
+          <div class="p-8 text-center">
+            <svg class="w-12 h-12 text-red-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-red-600 text-sm">Failed to load participants</p>
+            <p class="text-gray-500 text-xs mt-1">${error.message}</p>
+          </div>`;
+      }
+    }
+
+    async function toggleAttendance(participantId, eventId, markAsAttended) {
+      try {
+        const endpoint = markAsAttended ? '/api/attendance/mark' : '/api/attendance/unmark';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            participantId,
+            eventId,
+            organizerId: userId
+          })
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'Failed to update attendance');
+        }
+
+        // Reload attendance data
+        await loadAttendanceData(eventId);
+      } catch (error) {
+        console.error('Error updating attendance:', error);
+        alert('Error: ' + error.message);
+      }
+    }
+
+    document.getElementById('attendanceModal').addEventListener('click', function(e) {
+      if (e.target === this) closeAttendanceModal();
+    });
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAttendanceModal(); });
+  </script>
 
 </body>
 </html>
