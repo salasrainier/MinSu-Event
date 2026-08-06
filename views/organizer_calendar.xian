@@ -1,0 +1,870 @@
+{{> head }}
+<body class="bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 min-h-screen">
+
+  {{> navbar }}
+
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    
+    <!-- Fun Header with Animation -->
+    <div class="text-center mb-12 animate-bounce-in">
+      <div class="inline-block mb-4">
+        <div class="text-7xl animate-float">📅</div>
+      </div>
+      <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 mb-3">
+        Schedule Your Event!
+      </h1>
+      <p class="text-xl text-gray-600 font-medium">Follow these 3 easy steps 👇</p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="mb-12 max-w-4xl mx-auto">
+      <div class="flex items-center justify-between relative">
+        <div class="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 rounded-full -z-10 transform -translate-y-1/2"></div>
+        <div id="progressBar" class="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full -z-10 transform -translate-y-1/2 transition-all duration-500" style="width: 0%"></div>
+        
+        <!-- Step 1 -->
+        <div id="step1" class="flex flex-col items-center step-indicator active">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-2 transition-transform hover:scale-110">
+            1
+          </div>
+          <span class="text-sm font-bold text-gray-700">Pick Date</span>
+        </div>
+        
+        <!-- Step 2 -->
+        <div id="step2" class="flex flex-col items-center step-indicator">
+          <div class="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-2 transition-transform hover:scale-110">
+            2
+          </div>
+          <span class="text-sm font-bold text-gray-700">Choose Time</span>
+        </div>
+        
+        <!-- Step 3 -->
+        <div id="step3" class="flex flex-col items-center step-indicator">
+          <div class="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-2 transition-transform hover:scale-110">
+            3
+          </div>
+          <span class="text-sm font-bold text-gray-700">Lock Slot</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid lg:grid-cols-3 gap-8">
+
+      <!-- Left Side - Calendar & Venue -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Venue Selection Card -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 border-4 border-purple-200 animate-slide-in-left">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="text-5xl animate-bounce-slow">📍</div>
+            <div>
+              <h2 class="text-3xl font-black text-gray-800">Step 1: Pick a Venue</h2>
+              <p class="text-gray-600">Where will your event happen?</p>
+            </div>
+          </div>
+          
+          <select id="venueSelect" class="w-full px-6 py-4 text-lg font-bold bg-gradient-to-r from-purple-50 to-pink-50 border-4 border-purple-300 text-gray-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-400 focus:border-purple-500 transition-all cursor-pointer hover:shadow-lg">
+            <option value="">👉 Click here to choose...</option>
+            <option value="Main Campus">🏫 Main Campus</option>
+            <option value="Gymnasium">🏀 Gymnasium</option>
+            <option value="Quadrangle">🌳 Quadrangle</option>
+            <option value="Auditorium">🎭 Auditorium</option>
+            <option value="Conference Room">💼 Conference Room</option>
+            <option value="Sports Complex">⚽ Sports Complex</option>
+            <option value="Library">📚 Library</option>
+            <option value="Cafeteria">🍽️ Cafeteria</option>
+          </select>
+        </div>
+
+        <!-- Calendar Card -->
+        <div id="calendarCard" class="bg-white rounded-3xl shadow-2xl p-8 border-4 border-pink-200 opacity-50 pointer-events-none transition-all duration-500">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="text-5xl animate-bounce-slow">📆</div>
+              <div>
+                <h2 class="text-3xl font-black text-gray-800">Step 2: Pick a Date</h2>
+                <p class="text-gray-600">Click on a green day!</p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="previousMonth()" class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-xl transition font-bold shadow-lg hover:scale-105 transform">
+                ← Prev
+              </button>
+              <button onclick="nextMonth()" class="px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-xl transition font-bold shadow-lg hover:scale-105 transform">
+                Next →
+              </button>
+            </div>
+          </div>
+
+          <!-- Month/Year Display -->
+          <div class="text-center mb-6">
+            <h3 id="monthYear" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600"></h3>
+          </div>
+
+          <!-- Calendar Grid -->
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+            <!-- Day Headers -->
+            <div class="grid grid-cols-7 gap-2 mb-4">
+              <div class="text-center font-black text-purple-600 text-sm">SUN</div>
+              <div class="text-center font-black text-purple-600 text-sm">MON</div>
+              <div class="text-center font-black text-purple-600 text-sm">TUE</div>
+              <div class="text-center font-black text-purple-600 text-sm">WED</div>
+              <div class="text-center font-black text-purple-600 text-sm">THU</div>
+              <div class="text-center font-black text-purple-600 text-sm">FRI</div>
+              <div class="text-center font-black text-purple-600 text-sm">SAT</div>
+            </div>
+
+            <!-- Calendar Days -->
+            <div id="calendarDays" class="grid grid-cols-7 gap-2"></div>
+          </div>
+
+          <!-- Fun Legend -->
+          <div class="mt-6 p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl border-2 border-purple-300">
+            <h4 class="font-black text-gray-800 mb-4 text-lg flex items-center gap-2">
+              <span class="text-2xl">🎨</span> Color Guide
+            </h4>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg">
+                <div class="w-6 h-6 bg-green-500 rounded-full shadow-md"></div>
+                <span class="text-sm font-bold text-gray-700">✅ Available!</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg">
+                <div class="w-6 h-6 bg-yellow-400 rounded-full shadow-md"></div>
+                <span class="text-sm font-bold text-gray-700">⚠️ Busy day</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg">
+                <div class="w-6 h-6 bg-red-500 rounded-full shadow-md"></div>
+                <span class="text-sm font-bold text-gray-700">❌ Taken</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg">
+                <div class="w-6 h-6 bg-gray-400 rounded-full shadow-md"></div>
+                <span class="text-sm font-bold text-gray-700">⏰ Past</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Side - Time & Actions -->
+      <div class="space-y-6">
+        
+        <!-- Selected Info Card -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 border-4 border-blue-200 animate-slide-in-right">
+          <div class="text-center mb-6">
+            <div class="text-5xl mb-3 animate-bounce-slow">🎯</div>
+            <h3 class="text-2xl font-black text-gray-800 mb-2">Your Selection</h3>
+          </div>
+          
+          <div class="space-y-4">
+            <!-- Venue Display -->
+            <div class="p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl border-2 border-purple-300">
+              <p class="text-xs font-bold text-purple-600 mb-1">📍 VENUE</p>
+              <p id="selectedVenueDisplay" class="text-lg font-black text-gray-800">Not selected yet</p>
+            </div>
+            
+            <!-- Date Display -->
+            <div class="p-4 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl border-2 border-blue-300">
+              <p class="text-xs font-bold text-blue-600 mb-1">📅 DATE</p>
+              <p id="selectedDateDisplay" class="text-lg font-black text-gray-800">Not selected yet</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time Selection Card -->
+        <div id="timeCard" class="bg-white rounded-3xl shadow-2xl p-8 border-4 border-green-200 opacity-50 pointer-events-none transition-all duration-500">
+          <div class="text-center mb-6">
+            <div class="text-5xl mb-3 animate-bounce-slow">⏰</div>
+            <h3 class="text-2xl font-black text-gray-800 mb-2">Step 3: Pick Time</h3>
+            <p class="text-gray-600">When does it start and end?</p>
+          </div>
+
+          <!-- Start Time -->
+          <div class="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border-2 border-green-300">
+            <p class="text-center font-black text-green-600 mb-4 text-lg">🟢 START TIME</p>
+            <div class="flex gap-4 justify-center items-center">
+              <div class="text-center">
+                <p class="text-xs font-bold text-gray-600 mb-2">Hour</p>
+                <div class="time-picker-mini" id="startHourPicker">
+                  <div class="picker-scroll-mini" id="startHourScroll"></div>
+                </div>
+              </div>
+              <div class="text-4xl font-black text-green-600">:</div>
+              <div class="text-center">
+                <p class="text-xs font-bold text-gray-600 mb-2">Min</p>
+                <div class="time-picker-mini" id="startMinutePicker">
+                  <div class="picker-scroll-mini" id="startMinuteScroll"></div>
+                </div>
+              </div>
+              <div class="text-center">
+                <p class="text-xs font-bold text-gray-600 mb-2">AM/PM</p>
+                <div class="time-picker-mini" id="startPeriodPicker">
+                  <div class="picker-scroll-mini" id="startPeriodScroll"></div>
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-green-600 font-black mt-4 text-center" id="startTimeDisplay">12:00 AM</div>
+          </div>
+
+          <!-- End Time -->
+          <div class="p-6 bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border-2 border-red-300">
+            <p class="text-center font-black text-red-600 mb-4 text-lg">🔴 END TIME</p>
+            <div class="flex gap-4 justify-center items-center">
+              <div class="text-center">
+                <p class="text-xs font-bold text-gray-600 mb-2">Hour</p>
+                <div class="time-picker-mini" id="endHourPicker">
+                  <div class="picker-scroll-mini" id="endHourScroll"></div>
+                </div>
+              </div>
+              <div class="text-4xl font-black text-red-600">:</div>
+              <div class="text-center">
+                <p class="text-xs font-bold text-gray-600 mb-2">Min</p>
+                <div class="time-picker-mini" id="endMinutePicker">
+                  <div class="picker-scroll-mini" id="endMinuteScroll"></div>
+                </div>
+              </div>
+              <div class="text-center">
+                <p class="text-xs font-bold text-gray-600 mb-2">AM/PM</p>
+                <div class="time-picker-mini" id="endPeriodPicker">
+                  <div class="picker-scroll-mini" id="endPeriodScroll"></div>
+                </div>
+              </div>
+            </div>
+            <div class="text-3xl text-red-600 font-black mt-4 text-center" id="endTimeDisplay">01:00 PM</div>
+          </div>
+
+          <!-- Check Button -->
+          <button onclick="checkAvailability()" class="w-full py-4 mt-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-2xl transition font-black text-lg flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transform hover:scale-105">
+            <span class="text-2xl">🔍</span> Check if Available!
+          </button>
+
+          <!-- Status Message -->
+          <div id="statusMessage" class="mt-4 p-4 rounded-2xl text-sm font-bold hidden border-2"></div>
+
+          <!-- Lock Button -->
+          <button id="lockSlotBtn" onclick="lockSlot()" class="w-full py-4 mt-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-2xl transition font-black text-lg flex items-center justify-center gap-3 hidden shadow-xl hover:shadow-2xl transform hover:scale-105 animate-pulse">
+            <span class="text-2xl">🔒</span> Lock This Slot!
+          </button>
+
+          <!-- Proceed Button -->
+          <a id="proceedBtn" href="/submit-event" class="w-full py-4 mt-4 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white rounded-2xl transition font-black text-lg flex items-center justify-center gap-3 hidden text-center shadow-xl hover:shadow-2xl transform hover:scale-105 animate-bounce">
+            <span class="text-2xl">🎉</span> Create Event Now!
+          </a>
+        </div>
+
+        <!-- Conflicts Panel -->
+        <div id="conflictsPanel" class="bg-white rounded-3xl shadow-2xl p-8 border-4 border-red-300 hidden animate-shake">
+          <div class="text-center mb-4">
+            <div class="text-5xl mb-2">⚠️</div>
+            <h3 class="text-2xl font-black text-red-600">Oops! Time Conflict</h3>
+            <p class="text-gray-600 text-sm">Someone else booked this time</p>
+          </div>
+          <div id="conflictsList" class="space-y-3"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Upcoming Events Section -->
+    <div class="mt-12 bg-white rounded-3xl shadow-2xl p-8 border-4 border-indigo-200 animate-fade-in">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="text-5xl animate-bounce-slow">📋</div>
+        <div>
+          <h2 class="text-3xl font-black text-gray-800">Upcoming Events</h2>
+          <p class="text-gray-600">See what's already scheduled</p>
+        </div>
+      </div>
+      <div id="approvedEventsList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+  </div>
+
+  {{> footer }}
+
+  <script>
+    let currentDate = new Date();
+    let selectedDate = null;
+    let selectedVenue = null;
+    let approvedEvents = {{{approvedEvents}}};
+    let currentStep = 1;
+
+    // Update progress
+    function updateProgress(step) {
+      currentStep = step;
+      const progressBar = document.getElementById('progressBar');
+      const steps = [
+        document.getElementById('step1'),
+        document.getElementById('step2'),
+        document.getElementById('step3')
+      ];
+
+      // Update progress bar
+      progressBar.style.width = `${((step - 1) / 2) * 100}%`;
+
+      // Update step indicators
+      steps.forEach((stepEl, index) => {
+        const circle = stepEl.querySelector('div');
+        if (index < step) {
+          circle.className = 'w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-2 transition-transform hover:scale-110 animate-bounce';
+        } else {
+          circle.className = 'w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-2 transition-transform hover:scale-110';
+        }
+      });
+    }
+
+    // Venue selection handler
+    document.getElementById('venueSelect').addEventListener('change', function() {
+      selectedVenue = this.value;
+      document.getElementById('selectedVenueDisplay').textContent = selectedVenue || 'Not selected yet';
+      
+      if (selectedVenue) {
+        // Enable calendar
+        const calendarCard = document.getElementById('calendarCard');
+        calendarCard.classList.remove('opacity-50', 'pointer-events-none');
+        calendarCard.classList.add('animate-bounce-in');
+        updateProgress(1);
+        renderCalendar();
+      }
+    });
+
+    // Initialize calendar
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                         'July', 'August', 'September', 'October', 'November', 'December'];
+      document.getElementById('monthYear').textContent = `${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+      const calendarDays = document.getElementById('calendarDays');
+      calendarDays.innerHTML = '';
+
+      // Previous month days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        const dayEl = createDayElement(day, month - 1, year, true);
+        calendarDays.appendChild(dayEl);
+      }
+
+      // Current month days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayEl = createDayElement(day, month, year, false);
+        calendarDays.appendChild(dayEl);
+      }
+
+      // Next month days
+      const totalCells = calendarDays.children.length;
+      const remainingCells = 42 - totalCells;
+      for (let day = 1; day <= remainingCells; day++) {
+        const dayEl = createDayElement(day, month + 1, year, true);
+        calendarDays.appendChild(dayEl);
+      }
+    }
+
+    // Create day element
+    function createDayElement(day, month, year, isOtherMonth) {
+      const dayEl = document.createElement('div');
+      dayEl.className = 'aspect-square flex items-center justify-center rounded-xl text-center cursor-pointer transition-all font-black text-lg transform hover:scale-110';
+      dayEl.textContent = day;
+
+      if (isOtherMonth) {
+        dayEl.className += ' bg-gray-200 text-gray-400 cursor-not-allowed hover:scale-100';
+        return dayEl;
+      }
+
+      const date = new Date(year, month, day);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (date < today) {
+        dayEl.className += ' bg-gray-300 text-gray-500 cursor-not-allowed hover:scale-100';
+        return dayEl;
+      }
+
+      const eventsOnDate = approvedEvents.filter(event => {
+        const eventStart = new Date(event.event_date);
+        return eventStart.toDateString() === date.toDateString();
+      });
+
+      const hasConflict = selectedVenue && eventsOnDate.some(event => event.venue === selectedVenue);
+
+      if (hasConflict) {
+        dayEl.className += ' bg-red-500 text-white shadow-lg cursor-not-allowed hover:scale-100';
+        dayEl.title = '❌ Already booked!';
+      } else if (eventsOnDate.length > 0) {
+        dayEl.className += ' bg-yellow-400 text-white shadow-lg hover:shadow-xl';
+        dayEl.onclick = () => selectDate(date);
+        dayEl.title = `⚠️ ${eventsOnDate.length} event(s) at other venues`;
+      } else {
+        dayEl.className += ' bg-green-500 text-white shadow-lg hover:shadow-xl';
+        dayEl.onclick = () => selectDate(date);
+        dayEl.title = '✅ Available!';
+      }
+
+      if (selectedDate && selectedDate.toDateString() === date.toDateString()) {
+        dayEl.className = dayEl.className.replace(/bg-(green|yellow|red)-\d+/, 'bg-blue-600');
+        dayEl.classList.add('ring-4', 'ring-blue-300', 'animate-pulse');
+      }
+
+      return dayEl;
+    }
+
+    // Select date
+    function selectDate(date) {
+      selectedDate = date;
+      document.getElementById('selectedDateDisplay').textContent = date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      // Enable time card
+      const timeCard = document.getElementById('timeCard');
+      timeCard.classList.remove('opacity-50', 'pointer-events-none');
+      timeCard.classList.add('animate-bounce-in');
+      updateProgress(2);
+      
+      renderCalendar();
+    }
+
+    // Previous/Next month
+    function previousMonth() {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    }
+
+    // Initialize time pickers
+    function initializeTimePickers() {
+      initializeMiniPicker('start', 'hour', 12, 1, 12);
+      initializeMiniPicker('start', 'minute', 0, 0, 59, 15);
+      initializeMiniPicker('start', 'period', 'AM', ['AM', 'PM']);
+      
+      initializeMiniPicker('end', 'hour', 1, 1, 12);
+      initializeMiniPicker('end', 'minute', 0, 0, 59, 15);
+      initializeMiniPicker('end', 'period', 'PM', ['AM', 'PM']);
+    }
+
+    function initializeMiniPicker(type, unit, defaultValue, minOrArray, max, step = 1) {
+      const scrollContainer = document.getElementById(`${type}${unit.charAt(0).toUpperCase() + unit.slice(1)}Scroll`);
+      scrollContainer.innerHTML = '';
+
+      let items = [];
+      if (Array.isArray(minOrArray)) {
+        items = minOrArray;
+      } else {
+        for (let i = minOrArray; i <= max; i += step) {
+          items.push(String(i).padStart(2, '0'));
+        }
+      }
+
+      scrollContainer.appendChild(createPaddingItem());
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'picker-item-mini';
+        div.textContent = item;
+        div.onclick = () => scrollToItem(scrollContainer, div, type, unit);
+        scrollContainer.appendChild(div);
+      });
+      scrollContainer.appendChild(createPaddingItem());
+
+      const defaultIndex = items.indexOf(String(defaultValue).padStart(2, '0')) || items.indexOf(defaultValue);
+      if (defaultIndex >= 0) {
+        setTimeout(() => {
+          const targetItem = scrollContainer.children[defaultIndex + 1];
+          scrollContainer.scrollTop = targetItem.offsetTop - scrollContainer.offsetHeight / 2 + targetItem.offsetHeight / 2;
+        }, 0);
+      }
+
+      scrollContainer.addEventListener('scroll', () => updateSelectedItem(scrollContainer, type, unit));
+    }
+
+    function createPaddingItem() {
+      const div = document.createElement('div');
+      div.className = 'picker-item-padding-mini';
+      return div;
+    }
+
+    function scrollToItem(container, item, type, unit) {
+      container.scrollTop = item.offsetTop - container.offsetHeight / 2 + item.offsetHeight / 2;
+      updateSelectedItem(container, type, unit);
+    }
+
+    function updateSelectedItem(container, type, unit) {
+      const items = container.querySelectorAll('.picker-item-mini');
+      const centerY = container.offsetHeight / 2;
+
+      items.forEach(item => item.classList.remove('selected'));
+
+      let closestItem = null;
+      let closestDistance = Infinity;
+
+      items.forEach(item => {
+        const itemCenter = item.offsetTop + item.offsetHeight / 2 - container.scrollTop;
+        const distance = Math.abs(itemCenter - centerY);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestItem = item;
+        }
+      });
+
+      if (closestItem) {
+        closestItem.classList.add('selected');
+        updateTimeDisplay(type);
+      }
+    }
+
+    function updateTimeDisplay(type) {
+      const hourScroll = document.getElementById(`${type}HourScroll`);
+      const minuteScroll = document.getElementById(`${type}MinuteScroll`);
+      const periodScroll = document.getElementById(`${type}PeriodScroll`);
+
+      const hourItem = hourScroll.querySelector('.picker-item-mini.selected');
+      const minuteItem = minuteScroll.querySelector('.picker-item-mini.selected');
+      const periodItem = periodScroll.querySelector('.picker-item-mini.selected');
+
+      if (hourItem && minuteItem && periodItem) {
+        const display = `${hourItem.textContent}:${minuteItem.textContent} ${periodItem.textContent}`;
+        document.getElementById(`${type}TimeDisplay`).textContent = display;
+      }
+    }
+
+    function getSelectedTime(type) {
+      const hourItem = document.getElementById(`${type}HourScroll`).querySelector('.picker-item-mini.selected');
+      const minuteItem = document.getElementById(`${type}MinuteScroll`).querySelector('.picker-item-mini.selected');
+      const periodItem = document.getElementById(`${type}PeriodScroll`).querySelector('.picker-item-mini.selected');
+
+      if (!hourItem || !minuteItem || !periodItem) return null;
+
+      let hour = parseInt(hourItem.textContent);
+      const minute = parseInt(minuteItem.textContent);
+      const period = periodItem.textContent;
+
+      if (period === 'AM' && hour === 12) hour = 0;
+      if (period === 'PM' && hour !== 12) hour += 12;
+
+      return { hour, minute };
+    }
+
+    // Check availability
+    async function checkAvailability() {
+      if (!selectedDate) {
+        showStatus('❌ Please pick a date first!', 'error');
+        return;
+      }
+
+      if (!selectedVenue) {
+        showStatus('❌ Please pick a venue first!', 'error');
+        return;
+      }
+
+      const startTimeObj = getSelectedTime('start');
+      const endTimeObj = getSelectedTime('end');
+
+      if (!startTimeObj || !endTimeObj) {
+        showStatus('❌ Please set start and end times!', 'error');
+        return;
+      }
+
+      const eventDate = new Date(selectedDate);
+      eventDate.setHours(startTimeObj.hour, startTimeObj.minute);
+
+      const eventEndDate = new Date(selectedDate);
+      eventEndDate.setHours(endTimeObj.hour, endTimeObj.minute);
+
+      if (eventEndDate <= eventDate) {
+        showStatus('❌ End time must be after start time!', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/calendar/check-conflicts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventDate: eventDate.toISOString(),
+            eventEndDate: eventEndDate.toISOString(),
+            venue: selectedVenue
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.hasConflict) {
+          showStatus('❌ ' + data.message, 'error');
+          displayConflicts(data.conflicts);
+          document.getElementById('lockSlotBtn').classList.add('hidden');
+          document.getElementById('proceedBtn').classList.add('hidden');
+        } else {
+          showStatus('✅ ' + data.message, 'success');
+          document.getElementById('conflictsPanel').classList.add('hidden');
+          document.getElementById('lockSlotBtn').classList.remove('hidden');
+          document.getElementById('proceedBtn').classList.add('hidden');
+          updateProgress(3);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showStatus('❌ Failed to check availability', 'error');
+      }
+    }
+
+    // Lock slot
+    async function lockSlot() {
+      const startTimeObj = getSelectedTime('start');
+      const endTimeObj = getSelectedTime('end');
+
+      const eventDate = new Date(selectedDate);
+      eventDate.setHours(startTimeObj.hour, startTimeObj.minute);
+
+      const eventEndDate = new Date(selectedDate);
+      eventEndDate.setHours(endTimeObj.hour, endTimeObj.minute);
+
+      try {
+        const response = await fetch('/api/calendar/lock-slot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventDate: eventDate.toISOString(),
+            eventEndDate: eventEndDate.toISOString(),
+            venue: selectedVenue
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus('🎉 Slot locked! Click below to create your event!', 'success');
+          document.getElementById('proceedBtn').classList.remove('hidden');
+          document.getElementById('lockSlotBtn').classList.add('hidden');
+        } else {
+          showStatus('❌ ' + data.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showStatus('❌ Failed to lock slot', 'error');
+      }
+    }
+
+    // Show status
+    function showStatus(message, type) {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = message;
+      statusEl.className = `mt-4 p-4 rounded-2xl text-sm font-bold border-2 ${
+        type === 'success' ? 'bg-green-100 text-green-700 border-green-500' : 'bg-red-100 text-red-700 border-red-500'
+      }`;
+      statusEl.classList.remove('hidden');
+    }
+
+    // Display conflicts
+    function displayConflicts(conflicts) {
+      const panel = document.getElementById('conflictsPanel');
+      const list = document.getElementById('conflictsList');
+      list.innerHTML = '';
+
+      conflicts.forEach(conflict => {
+        const conflictEl = document.createElement('div');
+        conflictEl.className = 'p-4 bg-red-50 border-l-4 border-red-500 rounded-xl';
+        conflictEl.innerHTML = `
+          <p class="font-black text-gray-800 mb-1">${conflict.event_title}</p>
+          <p class="text-sm text-gray-600">👤 ${conflict.organizer_name}</p>
+          <p class="text-sm text-gray-600">⏰ ${new Date(conflict.event_date).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} - ${new Date(conflict.event_end_date).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</p>
+        `;
+        list.appendChild(conflictEl);
+      });
+
+      panel.classList.remove('hidden');
+    }
+
+    // Display approved events
+    function displayApprovedEvents() {
+      const list = document.getElementById('approvedEventsList');
+      list.innerHTML = '';
+
+      // Get current date/time
+      const now = new Date();
+
+      // Filter only FUTURE events (event hasn't ended yet)
+      const upcomingEvents = approvedEvents.filter(event => {
+        const eventEndDate = new Date(event.event_end_date);
+        return eventEndDate > now; // Only show if event end time is in the future
+      });
+
+      if (upcomingEvents.length === 0) {
+        list.innerHTML = '<div class="col-span-full p-8 text-center text-gray-500 bg-gray-50 rounded-2xl">📭 No upcoming events</div>';
+        return;
+      }
+
+      // Sort by date (earliest first)
+      const sortedEvents = [...upcomingEvents].sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+
+      sortedEvents.slice(0, 6).forEach((event, index) => {
+        const eventDate = new Date(event.event_date);
+        const eventEndDate = new Date(event.event_end_date);
+        const eventEl = document.createElement('div');
+        eventEl.className = 'p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-2xl hover:shadow-xl transition-all transform hover:scale-105';
+        eventEl.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-3xl">${index % 6 === 0 ? '🎉' : index % 6 === 1 ? '🎊' : index % 6 === 2 ? '🎈' : index % 6 === 3 ? '🎯' : index % 6 === 4 ? '🎪' : '🎭'}</span>
+            <span class="text-xs bg-indigo-500 text-white px-3 py-1 rounded-full font-bold">#${index + 1}</span>
+          </div>
+          <p class="font-black text-gray-800 mb-3 text-lg">${event.event_title}</p>
+          <div class="space-y-2 text-sm">
+            <p class="flex items-center gap-2 text-gray-700">
+              <span class="font-bold">📍</span> ${event.venue}
+            </p>
+            <p class="flex items-center gap-2 text-gray-700">
+              <span class="font-bold">📅</span> ${eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+            <p class="flex items-center gap-2 text-gray-700">
+              <span class="font-bold">⏰</span> ${eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+          </div>
+        `;
+        list.appendChild(eventEl);
+      });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeTimePickers();
+      displayApprovedEvents();
+    });
+  </script>
+
+  <style>
+    /* Animations */
+    @keyframes bounce-in {
+      0% { opacity: 0; transform: scale(0.3); }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes slide-in-left {
+      from { opacity: 0; transform: translateX(-100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slide-in-right {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+      20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+    .animate-slide-in-left { animation: slide-in-left 0.6s ease-out; }
+    .animate-slide-in-right { animation: slide-in-right 0.6s ease-out; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-shake { animation: shake 0.5s ease-in-out; }
+    .animate-fade-in { animation: fade-in 0.8s ease-out; }
+    .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+
+    /* Time Picker Styles */
+    .time-picker-mini {
+      width: 70px;
+      height: 150px;
+      border: 3px solid #a855f7;
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+    }
+
+    .picker-scroll-mini {
+      height: 100%;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+
+    .picker-scroll-mini::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .picker-item-mini {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .picker-item-mini:hover {
+      color: #6b7280;
+    }
+
+    .picker-item-mini.selected {
+      background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+      color: white;
+      font-weight: 900;
+      font-size: 22px;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+      transform: scale(1.1);
+    }
+
+    .picker-item-padding-mini {
+      height: 50px;
+    }
+
+    /* Center highlight */
+    .time-picker-mini::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.1), transparent);
+      pointer-events: none;
+      transform: translateY(-50%);
+      border-top: 2px solid rgba(168, 85, 247, 0.3);
+      border-bottom: 2px solid rgba(168, 85, 247, 0.3);
+      z-index: 10;
+    }
+
+    /* Smooth transitions */
+    * {
+      transition: all 0.3s ease;
+    }
+  </style>
+
+</body>
+</html>

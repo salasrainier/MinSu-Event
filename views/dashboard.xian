@@ -1,0 +1,661 @@
+{{> head }}
+<body class="bg-gradient-to-br from-white via-blue-50 to-white min-h-screen">
+
+  <!-- Top Navigation Bar -->
+  <nav class="bg-gradient-to-r from-green-700 to-emerald-600 shadow-lg sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+          <img src="/uploads/OIP.jpg" alt="MSU Logo" class="w-8 h-8 rounded-full object-cover" />
+          <span>MinSU Events</span>
+        </h1>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="text-green-50 hover:text-white transition font-medium text-sm">
+          🏠 Home
+        </a>
+        <a href="/submit-event" class="text-green-50 hover:text-white transition font-medium text-sm">
+          📝 Submit Event
+        </a>
+        <a href="/notifications" class="text-green-50 hover:text-white transition font-medium text-sm relative">
+          🔔 Notifications
+          <span class="absolute -top-2 -right-2 bg-yellow-400 text-green-800 text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">3</span>
+        </a>
+        <div class="flex items-center gap-2 text-white text-sm">
+          <span>👤</span>
+          <span>{{user.name}}</span>
+        </div>
+        <a href="/auth/logout" class="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition font-medium text-sm border border-white/30">
+          🚪 Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto px-4 py-12">
+    
+    <!-- Header Section -->
+    <div class="mb-10">
+      <h1 class="text-4xl font-bold text-green-800 mb-2">📊 My Events Dashboard</h1>
+      <p class="text-gray-600 flex items-center gap-2">
+        <span>Welcome {{user.name}}</span> - Monitor your submitted event proposals
+      </p>
+    </div>
+
+    <!-- Alert Messages -->
+    {{#if success_msg}}
+      <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-start gap-3 animate-slideDown">
+        <span class="text-xl">✅</span>
+        <div>
+          <p class="font-semibold">Success!</p>
+          <p class="text-sm">{{success_msg}}</p>
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if error_msg}}
+      <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-start gap-3 animate-slideDown">
+        <span class="text-xl">❌</span>
+        <div>
+          <p class="font-semibold">Error</p>
+          <p class="text-sm">{{error_msg}}</p>
+        </div>
+      </div>
+    {{/if}}
+
+    <!-- Status Overview Cards -->
+    <div class="grid md:grid-cols-4 gap-6 mb-12">
+      <!-- Total Submissions -->
+      <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Total Submissions</p>
+            <p class="text-4xl font-bold text-blue-600 mt-2">{{events.length}}</p>
+          </div>
+          <span class="text-4xl">📊</span>
+        </div>
+      </div>
+
+      <!-- Pending Review -->
+      <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500 hover:shadow-lg transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Pending Review</p>
+            <p class="text-4xl font-bold text-yellow-600 mt-2" id="pendingCount">0</p>
+          </div>
+          <span class="text-4xl">⏳</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Waiting for admin approval</p>
+      </div>
+
+      <!-- Approved Events -->
+      <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-600 hover:shadow-lg transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Approved</p>
+            <p class="text-4xl font-bold text-green-600 mt-2" id="approvedCount">0</p>
+          </div>
+          <span class="text-4xl">✅</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Ready to go</p>
+      </div>
+
+      <!-- Denied Events -->
+      <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500 hover:shadow-lg transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Denied</p>
+            <p class="text-4xl font-bold text-red-600 mt-2" id="deniedCount">0</p>
+          </div>
+          <span class="text-4xl">❌</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Needs revision</p>
+      </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+      <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <span>🔍</span> Search & Filter Events
+      </h3>
+      <div class="grid md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Search by Title</label>
+          <input type="text" id="searchInput" placeholder="Event title..." 
+                 class="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Filter by Status</label>
+          <select id="statusFilter" class="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+            <option value="">All Status</option>
+            <option value="Pending">⏳ Pending</option>
+            <option value="Approved">✅ Approved</option>
+            <option value="Denied">❌ Denied</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Sort By</label>
+          <select id="sortFilter" class="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+            <option value="recent">Most Recent</option>
+            <option value="oldest">Oldest First</option>
+            <option value="title">Title (A-Z)</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button id="resetBtn" class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium">
+            🔄 Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events Section -->
+    <div>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <span>📋</span> Your Event Proposals
+        </h2>
+        <a href="/submit-event" class="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold flex items-center gap-2 text-sm">
+          <span>➕</span> Submit New Event
+        </a>
+      </div>
+
+      {{#if events.length}}
+        <!-- Events Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
+          {{#each events}}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden event-card" data-status="{{status}}" data-title="{{event_title}}">
+              
+              <!-- Card Header with Status Color -->
+              <div class="{{#ifCond status 'Pending'}}bg-gradient-to-r from-yellow-500 to-yellow-600{{else ifCond status 'Approved'}}bg-gradient-to-r from-green-600 to-emerald-600{{else}}bg-gradient-to-r from-red-600 to-rose-600{{/ifCond}} p-6 text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 text-5xl opacity-10">
+                  {{#ifCond status 'Pending'}}⏳{{else ifCond status 'Approved'}}✅{{else}}❌{{/ifCond}}
+                </div>
+                <div class="relative z-10">
+                  <div class="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 class="text-xl font-bold line-clamp-2">{{event_title}}</h3>
+                      <p class="text-white/90 text-sm mt-1">{{organizer_name}}</p>
+                    </div>
+                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur text-white rounded-full text-xs font-bold border border-white/30">
+                      {{#ifCond status 'Pending'}}⏳ Pending{{else ifCond status 'Approved'}}✅ Approved{{else}}❌ Denied{{/ifCond}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="p-6 space-y-4">
+                
+                <!-- Event Details Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="bg-blue-50 p-3 rounded-lg">
+                    <p class="text-xs text-gray-600 font-semibold">Department</p>
+                    <p class="text-sm font-bold text-gray-800 mt-1">{{department}}</p>
+                  </div>
+                  
+                  <div class="bg-purple-50 p-3 rounded-lg">
+                    <p class="text-xs text-gray-600 font-semibold">Venue</p>
+                    <p class="text-sm font-bold text-gray-800 mt-1 line-clamp-1">{{venue}}</p>
+                  </div>
+                  
+                  <div class="bg-green-50 p-3 rounded-lg">
+                    <p class="text-xs text-gray-600 font-semibold">Start Date</p>
+                    <p class="text-sm font-bold text-gray-800 mt-1">{{formatDate event_date 'MMM DD'}}</p>
+                  </div>
+                  
+                  <div class="bg-orange-50 p-3 rounded-lg">
+                    <p class="text-xs text-gray-600 font-semibold">
+                      {{#if event_end_date}}End Date{{else}}Status{{/if}}
+                    </p>
+                    <p class="text-sm font-bold text-gray-800 mt-1">
+                      {{#if event_end_date}}{{formatDate event_end_date 'MMM DD'}}{{else}}Active{{/if}}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Purpose/Description -->
+                <div class="border-t border-gray-200 pt-4">
+                  <p class="text-xs font-semibold text-gray-600 mb-2">📄 Purpose</p>
+                  <p class="text-sm text-gray-700 line-clamp-3 bg-gray-50 p-3 rounded-lg">{{purpose}}</p>
+                </div>
+
+                <!-- Status Message -->
+                <div class="border-l-4 {{#ifCond status 'Pending'}}border-yellow-500 bg-yellow-50{{else ifCond status 'Approved'}}border-green-500 bg-green-50{{else}}border-red-500 bg-red-50{{/ifCond}} p-3 rounded">
+                  <p class="text-xs font-semibold {{#ifCond status 'Pending'}}text-yellow-800{{else ifCond status 'Approved'}}text-green-800{{else}}text-red-800{{/ifCond}}">
+                    {{#ifCond status 'Pending'}}
+                      ⏳ Awaiting admin review - Check back soon for updates
+                    {{else ifCond status 'Approved'}}
+                      ✅ Your event has been approved! You can now proceed with planning
+                    {{else}}
+                      ❌ Your event proposal was denied. Click to see more details
+                    {{/ifCond}}
+                  </p>
+                </div>
+
+                <!-- File & Actions -->
+                <div class="flex justify-between items-center pt-2">
+                  {{#if proposal_file}}
+                    <a href="{{proposal_file}}" target="_blank" class="text-xs text-green-600 hover:text-green-700 font-semibold flex items-center gap-1 transition">
+                      <span>📎</span> View Proposal
+                    </a>
+                  {{else}}
+                    <span class="text-xs text-gray-400">No proposal attached</span>
+                  {{/if}}
+                  
+                  <button class="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded transition font-medium" onclick="showEventDetails('{{event_title}}', '{{status}}', '{{venue}}', '{{department}}')">
+                    More Info →
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <!-- Empty State -->
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-md p-16 text-center border-2 border-dashed border-green-300">
+          <div class="text-6xl mb-4 opacity-50">📭</div>
+          <h3 class="text-2xl font-bold text-gray-800 mb-3">No Event Proposals Yet</h3>
+          <p class="text-gray-600 mb-8 max-w-md mx-auto">You haven't submitted any event proposals. Start by creating your first event to see it appear in your dashboard.</p>
+          <a href="/submit-event" class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-lg">
+            <span>🎉</span> Submit Your First Event
+          </a>
+        </div>
+      {{/if}}
+
+    </div>
+
+  </div>
+
+  {{> footer }}
+
+  <script>
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      updateStats();
+      setupFilterListeners();
+    });
+
+    // Update statistics
+    function updateStats() {
+      let pending = 0, approved = 0, denied = 0;
+      
+      document.querySelectorAll('.event-card').forEach(card => {
+        const status = card.getAttribute('data-status');
+        if (status === 'Pending') pending++;
+        if (status === 'Approved') approved++;
+        if (status === 'Denied') denied++;
+      });
+      
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('deniedCount').textContent = denied;
+    }
+
+    // Filter listeners
+    function setupFilterListeners() {
+      document.getElementById('searchInput').addEventListener('keyup', performFilter);
+      document.getElementById('statusFilter').addEventListener('change', performFilter);
+      document.getElementById('sortFilter').addEventListener('change', performSort);
+      document.getElementById('resetBtn').addEventListener('click', resetFilters);
+    }
+
+    // Perform filtering
+    function performFilter() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      const cards = document.querySelectorAll('.event-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const title = card.getAttribute('data-title').toLowerCase();
+        const status = card.getAttribute('data-status');
+        
+        const matchesSearch = !searchTerm || title.includes(searchTerm);
+        const matchesStatus = !statusFilter || status === statusFilter;
+
+        const shouldShow = matchesSearch && matchesStatus;
+        card.style.display = shouldShow ? '' : 'none';
+        if (shouldShow) visibleCount++;
+      });
+
+      if (visibleCount === 0) {
+        console.log('No events match filters');
+      }
+    }
+
+    // Sort events
+    function performSort() {
+      const sortBy = document.getElementById('sortFilter').value;
+      const container = document.querySelector('.grid[class*="gap-6"]');
+      if (!container) return;
+
+      const cards = Array.from(document.querySelectorAll('.event-card'));
+      
+      cards.sort((a, b) => {
+        if (sortBy === 'title') {
+          return a.getAttribute('data-title').localeCompare(b.getAttribute('data-title'));
+        }
+        // Default: recent (reverse order)
+        return sortBy === 'oldest' ? 1 : -1;
+      });
+
+      cards.forEach(card => container.appendChild(card));
+    }
+
+    // Reset filters
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('sortFilter').value = 'recent';
+      
+      document.querySelectorAll('.event-card').forEach(card => {
+        card.style.display = '';
+      });
+    }
+
+    // Show event details modal
+    function showEventDetails(title, status, venue, dept) {
+      alert(`📋 Event Details\n\nTitle: ${title}\nStatus: ${status}\nVenue: ${venue}\nDepartment: ${dept}`);
+    }
+  </script>
+
+  <style>
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slideDown { animation: slideDown 0.4s ease-out; }
+    .line-clamp-1 { line-clamp: 1; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-2 { line-clamp: 2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { line-clamp: 3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+
+</body>
+    
+    <!-- Header Section -->
+    <div class="mb-10">
+      <h1 class="text-4xl font-bold text-green-800 mb-2">Welcome, {{user.name}}! 👋</h1>
+      <p class="text-gray-600 flex items-center gap-2">
+        <span>✉️</span> {{user.email}}
+      </p>
+    </div>
+
+    <!-- Alert Messages -->
+    {{#if success_msg}}
+      <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-start gap-3 animate-slideDown">
+        <span class="text-xl">✅</span>
+        <div>
+          <p class="font-semibold">Success!</p>
+          <p class="text-sm">{{success_msg}}</p>
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if error_msg}}
+      <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-start gap-3 animate-slideDown">
+        <span class="text-xl">❌</span>
+        <div>
+          <p class="font-semibold">Error</p>
+          <p class="text-sm">{{error_msg}}</p>
+        </div>
+      </div>
+    {{/if}}
+
+    <!-- Stats Cards -->
+    <div class="grid md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-600">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Total Submissions</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1">{{events.length}}</p>
+          </div>
+          <span class="text-3xl">📊</span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-400">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Pending Review</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1" id="pendingCount">0</p>
+          </div>
+          <span class="text-3xl">⏳</span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-emerald-600">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Approved</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1" id="approvedCount">0</p>
+          </div>
+          <span class="text-3xl">✅</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Section -->
+    {{#eq user.role "admin"}}
+      <div class="mb-12 p-6 bg-gradient-to-r from-red-50 to-yellow-50 border-2 border-red-300 rounded-xl">
+        <h2 class="text-2xl font-bold text-red-800 mb-4 flex items-center gap-2">
+          <span>⚙️</span> Admin Controls
+        </h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          <a href="/admin/dashboard" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold flex items-center justify-center gap-2">
+            <span>📊</span> All Event Approvals
+          </a>
+          <a href="/admin/analytics" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2">
+            <span>📈</span> View Analytics
+          </a>
+          <a href="/" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold flex items-center justify-center gap-2">
+            <span>🏠</span> Back to Home
+          </a>
+        </div>
+      </div>
+    {{/eq}}
+
+    <!-- Events Section -->
+    <div>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <span>📋</span> {{#eq user.role "admin"}}All Events{{else}}Your Event Proposals{{/eq}}
+        </h2>
+        {{#unless (eq user.role "admin")}}
+          <a href="/submit-event" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm">
+            ➕ New Event
+          </a>
+        {{/unless}}
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div class="grid md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">🔍 Search</label>
+            <input type="text" id="searchInput" placeholder="Search events..." 
+                   class="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">📋 Status</label>
+            <select id="statusFilter" class="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+              <option value="">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Denied">Denied</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">🏢 Department</label>
+            <input type="text" id="departmentFilter" placeholder="Filter by department..." 
+                   class="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+          </div>
+          <div class="flex items-end">
+            <button id="filterBtn" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+              🔍 Filter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {{#if events.length}}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {{#each events}}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group event-card" data-status="{{status}}" data-department="{{department}}">
+              <!-- Card Header -->
+              <div class="bg-gradient-to-r from-green-600 to-emerald-600 p-4 text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10 bg-grid"></div>
+                <h3 class="font-bold text-lg relative z-10 line-clamp-2">{{event_title}}</h3>
+                <p class="text-green-100 text-sm relative z-10">by {{organizer_name}}</p>
+              </div>
+
+              <!-- Card Body -->
+              <div class="p-5 space-y-3">
+                <!-- Status Badge -->
+                <div class="flex items-center gap-2">
+                  {{#ifCond status "Pending"}}
+                    <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">⏳ Pending</span>
+                  {{else ifCond status "Approved"}}
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">✅ Approved</span>
+                  {{else ifCond status "Denied"}}
+                    <span class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">❌ Denied</span>
+                  {{/ifCond}}
+                </div>
+
+                <!-- Details -->
+                <div class="space-y-2 text-sm text-gray-600">
+                  <p class="flex items-center gap-2">
+                    <span>🏢</span> <strong>{{department}}</strong>
+                  </p>
+                  <p class="flex items-center gap-2">
+                    <span>📅</span> {{formatDate event_date 'MMM DD, YYYY'}}
+                  </p>
+                  {{#if event_end_date}}
+                    <p class="flex items-center gap-2">
+                      <span>⏰</span> Ends: {{formatDate event_end_date 'MMM DD, YYYY'}}
+                    </p>
+                  {{/if}}
+                  <p class="flex items-center gap-2">
+                    <span>📍</span> {{venue}}
+                  </p>
+                </div>
+
+                <!-- Purpose (truncated) -->
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="text-xs text-gray-600 line-clamp-2 italic">{{purpose}}</p>
+                </div>
+
+                <!-- File Link -->
+                {{#if proposal_file}}
+                  <a href="{{proposal_file}}" target="_blank" class="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium text-sm transition">
+                    <span>📎</span> View Proposal
+                  </a>
+                {{else}}
+                  <p class="text-xs text-gray-400 italic">No proposal file attached</p>
+                {{/if}}
+              </div>
+
+              <!-- Card Footer -->
+              <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
+                {{#eq user.role "admin"}}
+                  {{#ifCond status "Pending"}}
+                    <div class="flex gap-2">
+                      <a href="/admin/events/approve/{{id}}" class="flex-1 text-xs px-2 py-2 bg-green-600 text-white hover:bg-green-700 font-semibold transition rounded text-center">
+                        ✅ Approve
+                      </a>
+                      <a href="/admin/events/deny/{{id}}" class="flex-1 text-xs px-2 py-2 bg-red-600 text-white hover:bg-red-700 font-semibold transition rounded text-center">
+                        ❌ Deny
+                      </a>
+                    </div>
+                  {{else}}
+                    <p class="text-xs text-gray-500">Status: <strong>{{status}}</strong></p>
+                  {{/ifCond}}
+                {{else}}
+                  <button class="text-xs text-green-600 hover:text-green-700 font-semibold transition" onclick="alert('Event: {{event_title}}\n\nOrganizer: {{organizer_name}}\nStatus: {{status}}\nVenue: {{venue}}')">
+                    View Details →
+                  </button>
+                {{/eq}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="bg-white rounded-xl shadow-md p-12 text-center">
+          <div class="text-5xl mb-4">📭</div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">No Events Yet</h3>
+          <p class="text-gray-600 mb-6">You haven't submitted any event proposals. Get started now!</p>
+          <a href="/submit-event" class="inline-block px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+            ➕ Submit Your First Event
+          </a>
+        </div>
+      {{/if}}
+    </div>
+
+  </div>
+
+  {{> footer }}
+
+  <script>
+    // Calculate stats from DOM
+    document.addEventListener('DOMContentLoaded', function() {
+      calculateStats();
+      setupFilterListeners();
+    });
+
+    function calculateStats() {
+      let pending = 0, approved = 0;
+      
+      document.querySelectorAll('.event-card').forEach(card => {
+        const status = card.getAttribute('data-status');
+        if (status === 'Pending') pending++;
+        if (status === 'Approved') approved++;
+      });
+      
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('approvedCount').textContent = approved;
+    }
+
+    function setupFilterListeners() {
+      document.getElementById('filterBtn').addEventListener('click', performFilter);
+      document.getElementById('searchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performFilter();
+      });
+    }
+
+    function performFilter() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const departmentFilter = document.getElementById('departmentFilter').value.toLowerCase();
+
+      const cards = document.querySelectorAll('.event-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const purpose = card.querySelector('.line-clamp-2').textContent.toLowerCase();
+        const department = card.getAttribute('data-department').toLowerCase();
+        const status = card.getAttribute('data-status');
+        
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || purpose.includes(searchTerm);
+        const matchesStatus = !statusFilter || status === statusFilter;
+        const matchesDept = !departmentFilter || department.includes(departmentFilter);
+
+        const shouldShow = matchesSearch && matchesStatus && matchesDept;
+        card.style.display = shouldShow ? '' : 'none';
+        if (shouldShow) visibleCount++;
+      });
+
+      if (visibleCount === 0) {
+        alert('❌ No events match your filters');
+      }
+    }
+  </script>
+
+  <style>
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slideDown { animation: slideDown 0.4s ease-out; }
+    .bg-grid { background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; }
+    .line-clamp-2 { line-clamp: 2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+
+</body>

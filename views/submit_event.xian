@@ -1,0 +1,539 @@
+{{> head }}
+<body class="bg-gray-100 min-h-screen">
+
+  {{> navbar }}
+
+  <div class="max-w-3xl mx-auto px-4 py-8">
+
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Submit Event Proposal</h1>
+      <p class="text-sm text-gray-500 mt-1">Fill in all details and attach your proposal document to submit for admin approval.</p>
+    </div>
+
+    <!-- Flash messages -->
+    {{#if success_msg}}
+    <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-lg text-sm flex items-center gap-2">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      {{success_msg}}
+    </div>
+    {{/if}}
+    {{#if error_msg}}
+    <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg text-sm flex items-center gap-2">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      {{error_msg}}
+    </div>
+    {{/if}}
+
+    <form method="POST" action="/submit-event" enctype="multipart/form-data" id="eventForm">
+
+      <!-- Section 1: Basic Information -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-4">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+          <div class="w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">1</div>
+          <h2 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">Basic Information</h2>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Organizer Name</label>
+            <div class="relative">
+              <input name="organizer_name" type="text" value="{{organizerName}}" readonly
+                     class="w-full px-4 py-2.5 pr-10 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 text-sm cursor-not-allowed"/>
+              <svg class="absolute right-3 top-2.5 w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Auto-filled from your account</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Department / Organization <span class="text-red-500">*</span></label>
+            <input name="department" type="text"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                   placeholder="e.g., Student Council, CCS, Engineering Club" required/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Event Title <span class="text-red-500">*</span></label>
+            <input name="event_title" type="text"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                   placeholder="e.g., Annual Sports Day, Founder's Day Celebration" required/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Schedule & Location -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-4">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+          <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">2</div>
+          <h2 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">Schedule & Location</h2>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+
+          <!-- Mini Calendar -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Select Month to View Schedule
+              <span class="ml-2 text-xs font-normal text-gray-400">— dates with booked events are highlighted</span>
+            </label>
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <!-- Calendar Header -->
+              <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
+                <button type="button" id="prevMonth" class="p-1.5 hover:bg-gray-200 rounded-lg transition">
+                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <span id="calendarTitle" class="text-sm font-semibold text-gray-800"></span>
+                <button type="button" id="nextMonth" class="p-1.5 hover:bg-gray-200 rounded-lg transition">
+                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+              <!-- Day headers -->
+              <div class="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100">
+                <div class="py-2">Sun</div><div class="py-2">Mon</div><div class="py-2">Tue</div>
+                <div class="py-2">Wed</div><div class="py-2">Thu</div><div class="py-2">Fri</div><div class="py-2">Sat</div>
+              </div>
+              <!-- Calendar grid -->
+              <div id="calendarGrid" class="grid grid-cols-7 text-center text-sm"></div>
+              <!-- Legend -->
+              <div class="flex items-center gap-4 px-4 py-2.5 border-t border-gray-100 bg-gray-50 text-xs text-gray-500">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span> Has booked event</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span> Today</span>
+              </div>
+            </div>
+
+            <!-- Booked events tooltip area -->
+            <div id="bookedInfo" class="hidden mt-2 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Start Date & Time <span class="text-red-500">*</span></label>
+              <input type="datetime-local" name="event_date" id="eventDateInput"
+                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" required/>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">End Date & Time <span class="text-red-500">*</span></label>
+              <input type="datetime-local" name="event_end_date" id="eventEndDateInput"
+                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" required/>
+              <p class="text-xs text-gray-400 mt-1">Must be after start date</p>
+            </div>
+          </div>
+
+          <!-- Conflict alert -->
+          <div id="conflictAlert" class="hidden p-3 bg-red-50 border border-red-300 rounded-lg text-sm text-red-700">
+            <div class="flex items-start gap-2">
+              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <div id="conflictMsg"></div>
+            </div>
+          </div>
+
+          <!-- Available indicator -->
+          <div id="availableAlert" class="hidden p-3 bg-green-50 border border-green-300 rounded-lg text-sm text-green-700 flex items-center gap-2">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Time slot is available!
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Venue / Location <span class="text-red-500">*</span></label>
+            <input name="venue" id="venueInput" type="text"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                   placeholder="e.g., Gymnasium, Quadrangle, Auditorium" required/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Event Details -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-4">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+          <div class="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">3</div>
+          <h2 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">Event Details</h2>
+        </div>
+        <div class="px-6 py-5">
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Purpose & Description <span class="text-red-500">*</span></label>
+          <textarea name="purpose" rows="5"
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition resize-none"
+                    placeholder="Describe the purpose, objectives, expected attendance, and outcomes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Section 4: Attachments -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+          <div class="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">4</div>
+          <h2 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">Attachments</h2>
+        </div>
+        <div class="px-6 py-5 space-y-6">
+
+          <!-- Proposal Document — REQUIRED -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              Proposal Document <span class="text-red-500">*</span>
+              <span class="ml-1 text-xs font-normal text-red-500">(Required — admin will review this)</span>
+            </label>
+            <div id="docUploadArea"
+                 class="relative border-2 border-dashed border-red-300 rounded-lg p-6 text-center hover:border-green-400 hover:bg-green-50 transition cursor-pointer">
+              <input type="file" name="proposal_file" id="fileInput"
+                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                     accept=".pdf,.doc,.docx,.txt,.pptx"/>
+              <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <p class="text-sm text-gray-600 font-medium">Click or drag proposal document here</p>
+              <p class="text-xs text-gray-400 mt-1">PDF, Word, PowerPoint &bull; Max 10MB</p>
+            </div>
+            <p id="fileName" class="text-xs text-gray-500 mt-1"></p>
+          </div>
+
+          <!-- Photos — optional -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Event Photos <span class="text-xs font-normal text-gray-400">(Optional)</span></label>
+            <div id="photoUploadArea"
+                 class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 hover:bg-green-50 transition cursor-pointer">
+              <input type="file" name="event_images" id="photoInput"
+                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                     accept="image/*" multiple/>
+              <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <p class="text-sm text-gray-600 font-medium">Click or drag photos here</p>
+              <p class="text-xs text-gray-400 mt-1">JPG, PNG, GIF &bull; Max 5MB each &bull; Up to 5 images</p>
+            </div>
+            <div id="photoPreview" class="grid grid-cols-4 md:grid-cols-6 gap-2 mt-2"></div>
+            <p id="photoCount" class="text-xs text-gray-500 mt-1"></p>
+          </div>
+
+          <!-- Video — optional -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Event Video <span class="text-xs font-normal text-gray-400">(Optional)</span></label>
+            <div id="videoUploadArea"
+                 class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 hover:bg-purple-50 transition cursor-pointer">
+              <input type="file" name="event_video" id="videoInput"
+                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                     accept="video/*"/>
+              <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              <p class="text-sm text-gray-600 font-medium">Click or drag video here</p>
+              <p class="text-xs text-gray-400 mt-1">MP4, MOV, AVI &bull; Max 50MB</p>
+            </div>
+            <div id="videoPreview" class="mt-2 hidden">
+              <video id="videoPlayer" controls class="w-full rounded-lg max-h-48 bg-black"></video>
+            </div>
+            <p id="videoInfo" class="text-xs text-gray-500 mt-1"></p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <button type="submit" id="submitBtn"
+                class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition shadow">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+          Submit Proposal
+        </button>
+        <a href="/organizer/dashboard"
+           class="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg transition">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+
+  {{> footer }}
+
+  <script>
+    // ── Booked events data ────────────────────────────────────
+    let bookedEvents = [];
+    let calYear, calMonth;
+
+    async function loadBookedDates() {
+      try {
+        const res = await fetch('/api/booked-dates');
+        const data = await res.json();
+        bookedEvents = data.events || [];
+      } catch(e) { bookedEvents = []; }
+      renderCalendar();
+    }
+
+    // ── Mini Calendar ─────────────────────────────────────────
+    const MONTHS = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+
+    function initCalendar() {
+      const now = new Date();
+      calYear  = now.getFullYear();
+      calMonth = now.getMonth();
+    }
+
+    function renderCalendar() {
+      const title = document.getElementById('calendarTitle');
+      const grid  = document.getElementById('calendarGrid');
+      title.textContent = `${MONTHS[calMonth]} ${calYear}`;
+
+      const firstDay = new Date(calYear, calMonth, 1).getDay();
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+      const today = new Date();
+
+      let html = '';
+
+      // Empty cells before first day
+      for (let i = 0; i < firstDay; i++) {
+        html += `<div class="py-2"></div>`;
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(calYear, calMonth, d);
+        const isToday = date.toDateString() === today.toDateString();
+        const isPast  = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+        // Check if any booked event overlaps this day
+        const dayStart = new Date(calYear, calMonth, d, 0, 0, 0);
+        const dayEnd   = new Date(calYear, calMonth, d, 23, 59, 59);
+        const booked   = bookedEvents.filter(ev => {
+          const s = new Date(ev.event_date);
+          const e = new Date(ev.event_end_date);
+          return s <= dayEnd && e >= dayStart;
+        });
+
+        let cls = 'py-2 text-xs rounded-lg mx-0.5 my-0.5 cursor-default relative ';
+        if (isPast)        cls += 'text-gray-300 ';
+        else if (isToday)  cls += 'bg-green-500 text-white font-bold ';
+        else if (booked.length) cls += 'bg-red-100 text-red-700 font-semibold cursor-pointer hover:bg-red-200 ';
+        else               cls += 'text-gray-700 hover:bg-gray-100 ';
+
+        const dataAttr = booked.length
+          ? `data-booked="${encodeURIComponent(JSON.stringify(booked.map(b => b.event_title)))}"`
+          : '';
+
+        html += `<div class="${cls}" ${dataAttr} onclick="showBookedInfo(this, ${d})">${d}${booked.length ? `<span class="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>` : ''}</div>`;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    function showBookedInfo(el, day) {
+      const raw = el.getAttribute('data-booked');
+      if (!raw) return;
+      const titles = JSON.parse(decodeURIComponent(raw));
+      const info = document.getElementById('bookedInfo');
+      info.innerHTML = `<strong>${MONTHS[calMonth]} ${day} — Booked Events:</strong><ul class="mt-1 list-disc list-inside">${titles.map(t => `<li>${t}</li>`).join('')}</ul>`;
+      info.classList.remove('hidden');
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      calMonth--;
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      document.getElementById('bookedInfo').classList.add('hidden');
+      renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      calMonth++;
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      document.getElementById('bookedInfo').classList.add('hidden');
+      renderCalendar();
+    });
+
+    // ── Date inputs ───────────────────────────────────────────
+    const eventDateInput    = document.getElementById('eventDateInput');
+    const eventEndDateInput = document.getElementById('eventEndDateInput');
+    const conflictAlert     = document.getElementById('conflictAlert');
+    const conflictMsg       = document.getElementById('conflictMsg');
+    const availableAlert    = document.getElementById('availableAlert');
+
+    const today = new Date().toISOString().slice(0, 16);
+    eventDateInput.min    = today;
+    eventEndDateInput.min = today;
+
+    eventDateInput.addEventListener('change', () => {
+      if (eventDateInput.value) {
+        eventEndDateInput.min = eventDateInput.value;
+        if (eventEndDateInput.value && eventEndDateInput.value <= eventDateInput.value) {
+          eventEndDateInput.value = '';
+        }
+      }
+      checkConflict();
+    });
+
+    eventEndDateInput.addEventListener('change', () => {
+      if (eventDateInput.value && eventEndDateInput.value && eventEndDateInput.value <= eventDateInput.value) {
+        alert('End date must be after start date.');
+        eventEndDateInput.value = '';
+        return;
+      }
+      checkConflict();
+    });
+
+    function checkConflict() {
+      const start = eventDateInput.value;
+      const end   = eventEndDateInput.value;
+      conflictAlert.classList.add('hidden');
+      availableAlert.classList.add('hidden');
+      if (!start || !end) return;
+
+      const s = new Date(start);
+      const e = new Date(end);
+
+      const conflicts = bookedEvents.filter(ev => {
+        const es = new Date(ev.event_date);
+        const ee = new Date(ev.event_end_date);
+        return es < e && ee > s;
+      });
+
+      if (conflicts.length) {
+        conflictMsg.innerHTML = `<strong>Schedule conflict!</strong> The following approved event(s) overlap your chosen time:<ul class="mt-1 list-disc list-inside">${conflicts.map(c => `<li>${c.event_title} (${new Date(c.event_date).toLocaleString()} – ${new Date(c.event_end_date).toLocaleString()})</li>`).join('')}</ul><p class="mt-1">Please choose a different date/time.</p>`;
+        conflictAlert.classList.remove('hidden');
+      } else {
+        availableAlert.classList.remove('hidden');
+      }
+    }
+
+    // ── Proposal document ─────────────────────────────────────
+    const fileInput     = document.getElementById('fileInput');
+    const fileName      = document.getElementById('fileName');
+    const docUploadArea = document.getElementById('docUploadArea');
+
+    function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+    ['dragenter','dragover','dragleave','drop'].forEach(ev => docUploadArea.addEventListener(ev, preventDefaults));
+    docUploadArea.addEventListener('dragover',  () => docUploadArea.classList.add('border-green-400','bg-green-50'));
+    docUploadArea.addEventListener('dragleave', () => docUploadArea.classList.remove('border-green-400','bg-green-50'));
+    docUploadArea.addEventListener('drop', e => { fileInput.files = e.dataTransfer.files; showFileName(e.dataTransfer.files[0]); });
+    fileInput.addEventListener('change', e => showFileName(e.target.files[0]));
+
+    function showFileName(file) {
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        fileName.innerHTML = '<span class="text-red-500">File exceeds 10MB limit.</span>';
+        fileInput.value = '';
+        return;
+      }
+      fileName.innerHTML = `
+        <span class="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5">
+          <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span class="text-green-700 font-medium text-xs">${file.name}</span>
+          <span class="text-green-500 text-xs">(${(file.size/1048576).toFixed(1)} MB)</span>
+          <button type="button" onclick="clearProposal()"
+            class="ml-1 w-5 h-5 flex items-center justify-center bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition flex-shrink-0" title="Remove file">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </span>`;
+      docUploadArea.classList.remove('border-red-300');
+      docUploadArea.classList.add('border-green-400');
+    }
+
+    function clearProposal() {
+      fileInput.value = '';
+      fileName.innerHTML = '';
+      docUploadArea.classList.remove('border-green-400');
+      docUploadArea.classList.add('border-red-300');
+    }
+
+    // ── Photos ────────────────────────────────────────────────
+    const photoInput      = document.getElementById('photoInput');
+    const photoPreview    = document.getElementById('photoPreview');
+    const photoCount      = document.getElementById('photoCount');
+    const photoUploadArea = document.getElementById('photoUploadArea');
+    let selectedPhotos    = [];
+
+    ['dragenter','dragover','dragleave','drop'].forEach(ev => photoUploadArea.addEventListener(ev, preventDefaults));
+    photoUploadArea.addEventListener('dragover',  () => photoUploadArea.classList.add('bg-green-50'));
+    photoUploadArea.addEventListener('dragleave', () => photoUploadArea.classList.remove('bg-green-50'));
+    photoUploadArea.addEventListener('drop', e => handlePhotos(e.dataTransfer.files));
+    photoInput.addEventListener('change', e => handlePhotos(e.target.files));
+
+    function handlePhotos(files) {
+      if (selectedPhotos.length + files.length > 5) {
+        photoCount.textContent = 'Maximum 5 photos allowed.';
+        photoCount.className = 'text-xs text-red-500 mt-1';
+        return;
+      }
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        if (file.size > 5 * 1024 * 1024) continue;
+        selectedPhotos.push(file);
+        const reader = new FileReader();
+        reader.onload = e => {
+          const card = document.createElement('div');
+          card.className = 'relative group rounded-lg overflow-hidden aspect-square bg-gray-100';
+          card.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover"/><button type="button" onclick="removePhoto(this.parentElement)" class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition font-bold">&times;</button>`;
+          photoPreview.appendChild(card);
+        };
+        reader.readAsDataURL(file);
+      }
+      photoCount.textContent = `${selectedPhotos.length} / 5 selected`;
+      photoCount.className = 'text-xs text-gray-500 mt-1';
+      syncPhotos();
+    }
+
+    function removePhoto(card) {
+      const idx = Array.from(photoPreview.children).indexOf(card);
+      if (idx > -1) { selectedPhotos.splice(idx, 1); card.remove(); }
+      photoCount.textContent = `${selectedPhotos.length} / 5 selected`;
+      syncPhotos();
+    }
+
+    function syncPhotos() {
+      const dt = new DataTransfer();
+      selectedPhotos.forEach(f => dt.items.add(f));
+      photoInput.files = dt.files;
+    }
+
+    // ── Video ─────────────────────────────────────────────────
+    const videoInput      = document.getElementById('videoInput');
+    const videoPreview    = document.getElementById('videoPreview');
+    const videoPlayer     = document.getElementById('videoPlayer');
+    const videoInfo       = document.getElementById('videoInfo');
+    const videoUploadArea = document.getElementById('videoUploadArea');
+
+    ['dragenter','dragover','dragleave','drop'].forEach(ev => videoUploadArea.addEventListener(ev, preventDefaults));
+    videoUploadArea.addEventListener('dragover',  () => videoUploadArea.classList.add('bg-purple-50'));
+    videoUploadArea.addEventListener('dragleave', () => videoUploadArea.classList.remove('bg-purple-50'));
+    videoUploadArea.addEventListener('drop', e => handleVideo(e.dataTransfer.files[0]));
+    videoInput.addEventListener('change', e => handleVideo(e.target.files[0]));
+
+    function handleVideo(file) {
+      if (!file || !file.type.startsWith('video/')) return;
+      if (file.size > 50 * 1024 * 1024) { videoInfo.textContent = 'Video exceeds 50MB.'; return; }
+      videoInfo.textContent = `${file.name} (${(file.size/1048576).toFixed(1)} MB)`;
+      const reader = new FileReader();
+      reader.onload = e => { videoPlayer.src = e.target.result; videoPreview.classList.remove('hidden'); };
+      reader.readAsDataURL(file);
+    }
+
+    // ── Form validation ───────────────────────────────────────
+    document.getElementById('eventForm').addEventListener('submit', e => {
+      // 1. Proposal required
+      if (!fileInput.files || fileInput.files.length === 0) {
+        e.preventDefault();
+        alert('Proposal document is required. Please attach a PDF or Word file before submitting.');
+        docUploadArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      // 2. Conflict check
+      if (!conflictAlert.classList.contains('hidden')) {
+        e.preventDefault();
+        alert('Please resolve the schedule conflict before submitting.');
+        eventDateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      // 3. Dates
+      const start = eventDateInput.value;
+      const end   = eventEndDateInput.value;
+      if (!start || !end || end <= start) {
+        e.preventDefault();
+        alert('Please set valid start and end dates.');
+        return;
+      }
+    });
+
+    // ── Init ──────────────────────────────────────────────────
+    initCalendar();
+    loadBookedDates();
+  </script>
+
+</body>
+</html>

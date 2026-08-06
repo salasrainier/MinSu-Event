@@ -1,0 +1,521 @@
+{{> head }}
+<body class="bg-gray-100 min-h-screen">
+
+  {{> navbar }}
+
+  <!-- Main Content Container -->
+  <div class="max-w-2xl mx-auto px-4 py-4">
+
+    <!-- Alert Messages -->
+    {{#if success_msg}}
+      <div class="mb-3 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-2 shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-sm font-medium">{{success_msg}}</p>
+      </div>
+    {{/if}}
+
+    {{#if error_msg}}
+      <div class="mb-3 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-2 shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-sm font-medium">{{error_msg}}</p>
+      </div>
+    {{/if}}
+
+    <!-- Events Feed -->
+    <div class="space-y-4">
+
+      {{#if events.length}}
+        {{#each events}}
+        <!-- Event Card (Facebook-style) -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow {{#if is_expired}}opacity-90{{/if}}">
+          
+          {{#if is_expired}}
+          <!-- Expired Banner -->
+          <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 text-sm font-semibold flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>⏰ This event has ended - You can still view, react, and comment</span>
+          </div>
+          {{/if}}
+          
+          <!-- Event Header -->
+          <div class="p-4 flex items-center gap-3 border-b border-gray-100">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+              {{substring User.name 0 1}}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-gray-900">{{User.name}}</h3>
+                {{#if is_expired}}
+                <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full font-semibold">EXPIRED</span>
+                {{/if}}
+              </div>
+              <p class="text-xs text-gray-500">{{formatDate created_at "MMM D, YYYY"}}</p>
+            </div>
+          </div>
+
+          <!-- Event Content -->
+          <div class="p-4">
+            <h2 class="text-xl font-bold text-gray-900 mb-2">{{event_title}}</h2>
+            <p class="text-gray-700 mb-3">{{purpose}}</p>
+            
+            <div class="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
+              <div class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span>{{formatDate event_date "MMM D, YYYY"}}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>{{venue}}</span>
+              </div>
+            </div>
+
+            <!-- Event Video -->
+            {{#if event_video}}
+            <div class="mb-3 rounded-lg overflow-hidden bg-black">
+              <video controls class="w-full max-h-96" preload="metadata">
+                <source src="{{event_video}}" type="video/mp4">
+                <source src="{{event_video}}" type="video/webm">
+                <source src="{{event_video}}" type="video/ogg">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            {{/if}}
+
+            <!-- Event Images Collage (Facebook-style) -->
+            {{#if event_images}}
+              {{#if event_images.length}}
+              <div class="mb-3 rounded-lg overflow-hidden bg-gray-100" data-images="{{json event_images}}">
+                <!-- Single Image -->
+                {{#ifCond event_images.length '===' 1}}
+                <div class="w-full">
+                  <img src="{{event_images.[0]}}" alt="{{event_title}}" class="event-image w-full h-96 object-cover cursor-pointer hover:opacity-95 transition" data-index="0" />
+                </div>
+                {{/ifCond}}
+
+                <!-- Two Images -->
+                {{#ifCond event_images.length '===' 2}}
+                <div class="grid grid-cols-2 gap-0.5">
+                  <img src="{{event_images.[0]}}" alt="{{event_title}}" class="event-image w-full h-80 object-cover cursor-pointer hover:opacity-95 transition" data-index="0" />
+                  <img src="{{event_images.[1]}}" alt="{{event_title}}" class="event-image w-full h-80 object-cover cursor-pointer hover:opacity-95 transition" data-index="1" />
+                </div>
+                {{/ifCond}}
+
+                <!-- Three Images -->
+                {{#ifCond event_images.length '===' 3}}
+                <div class="grid grid-cols-2 gap-0.5">
+                  <img src="{{event_images.[0]}}" alt="{{event_title}}" class="event-image w-full h-80 object-cover cursor-pointer hover:opacity-95 transition" data-index="0" />
+                  <div class="grid grid-rows-2 gap-0.5">
+                    <img src="{{event_images.[1]}}" alt="{{event_title}}" class="event-image w-full h-full object-cover cursor-pointer hover:opacity-95 transition" data-index="1" />
+                    <img src="{{event_images.[2]}}" alt="{{event_title}}" class="event-image w-full h-full object-cover cursor-pointer hover:opacity-95 transition" data-index="2" />
+                  </div>
+                </div>
+                {{/ifCond}}
+
+                <!-- Four Images -->
+                {{#ifCond event_images.length '===' 4}}
+                <div class="grid grid-cols-2 gap-0.5">
+                  <img src="{{event_images.[0]}}" alt="{{event_title}}" class="event-image w-full h-64 object-cover cursor-pointer hover:opacity-95 transition" data-index="0" />
+                  <img src="{{event_images.[1]}}" alt="{{event_title}}" class="event-image w-full h-64 object-cover cursor-pointer hover:opacity-95 transition" data-index="1" />
+                  <img src="{{event_images.[2]}}" alt="{{event_title}}" class="event-image w-full h-64 object-cover cursor-pointer hover:opacity-95 transition" data-index="2" />
+                  <img src="{{event_images.[3]}}" alt="{{event_title}}" class="event-image w-full h-64 object-cover cursor-pointer hover:opacity-95 transition" data-index="3" />
+                </div>
+                {{/ifCond}}
+
+                <!-- Five or More Images -->
+                {{#ifCond event_images.length '>=' 5}}
+                <div class="grid grid-cols-2 gap-0.5">
+                  <img src="{{event_images.[0]}}" alt="{{event_title}}" class="event-image w-full h-64 object-cover cursor-pointer hover:opacity-95 transition" data-index="0" />
+                  <img src="{{event_images.[1]}}" alt="{{event_title}}" class="event-image w-full h-64 object-cover cursor-pointer hover:opacity-95 transition" data-index="1" />
+                  <img src="{{event_images.[2]}}" alt="{{event_title}}" class="event-image w-full h-64 object-cover cursor-pointer hover:opacity-95 transition" data-index="2" />
+                  <div class="relative event-image cursor-pointer" data-index="3">
+                    <img src="{{event_images.[3]}}" alt="{{event_title}}" class="w-full h-64 object-cover hover:opacity-95 transition" />
+                    {{#ifCond event_images.length '>' 4}}
+                    <div class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center hover:bg-opacity-60 transition pointer-events-none">
+                      <span class="text-white text-4xl font-bold">+{{subtract event_images.length 4}}</span>
+                    </div>
+                    {{/ifCond}}
+                  </div>
+                </div>
+                {{/ifCond}}
+              </div>
+              {{/if}}
+            {{/if}}
+          </div>
+
+          <!-- Reactions & Stats Bar -->
+          <div class="px-4 py-2 border-t border-b border-gray-100 flex items-center justify-between text-sm text-gray-600">
+            <div class="flex items-center gap-2">
+              {{#if totalReactions}}
+              <div class="flex items-center gap-1">
+                <span class="text-lg">👍</span>
+                <span>{{totalReactions}}</span>
+              </div>
+              {{/if}}
+            </div>
+            <div class="flex items-center gap-3">
+              <span>{{totalComments}} comments</span>
+              <span>{{totalParticipants}} joined</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="px-4 py-2 flex items-center justify-around border-b border-gray-100">
+            <!-- Like Button with Reaction Picker -->
+            <div class="relative reaction-container">
+              <button class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition {{#if userReaction}}text-blue-600{{else}}text-gray-600{{/if}}" data-event-id="{{id}}">
+                <span class="text-xl">{{#if userReaction}}{{#ifCond userReaction 'like'}}👍{{/ifCond}}{{#ifCond userReaction 'love'}}❤️{{/ifCond}}{{#ifCond userReaction 'haha'}}😂{{/ifCond}}{{#ifCond userReaction 'wow'}}😮{{/ifCond}}{{#ifCond userReaction 'sad'}}😢{{/ifCond}}{{#ifCond userReaction 'angry'}}😡{{/ifCond}}{{else}}👍{{/if}}</span>
+                <span class="font-semibold">{{#if userReaction}}{{userReaction}}{{else}}Like{{/if}}</span>
+              </button>
+              
+              <!-- Reaction Picker (Hidden by default) -->
+              <div class="reaction-picker absolute bottom-full left-0 mb-2 bg-white rounded-full shadow-lg border border-gray-200 px-2 py-1 hidden">
+                <div class="flex gap-1">
+                  <button class="reaction-option text-2xl hover:scale-125 transition-transform" data-reaction="like">👍</button>
+                  <button class="reaction-option text-2xl hover:scale-125 transition-transform" data-reaction="love">❤️</button>
+                  <button class="reaction-option text-2xl hover:scale-125 transition-transform" data-reaction="haha">😂</button>
+                  <button class="reaction-option text-2xl hover:scale-125 transition-transform" data-reaction="wow">😮</button>
+                  <button class="reaction-option text-2xl hover:scale-125 transition-transform" data-reaction="sad">😢</button>
+                  <button class="reaction-option text-2xl hover:scale-125 transition-transform" data-reaction="angry">😡</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Comment Button -->
+            <button class="comment-toggle flex items-center gap-2 px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-100 transition" data-event-id="{{id}}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>
+              <span class="font-semibold">Comment</span>
+            </button>
+
+            <!-- Join/Leave Button -->
+            {{#if is_expired}}
+              <!-- Expired Event - Show disabled button -->
+              <button class="flex items-center gap-2 px-4 py-2 text-gray-400 rounded-lg bg-gray-100 cursor-not-allowed font-semibold" disabled>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Expired</span>
+              </button>
+            {{else}}
+              <!-- Active Event - Show Join/Leave -->
+              {{#if userJoined}}
+              <button class="leave-event flex items-center gap-2 px-4 py-2 text-red-600 rounded-lg hover:bg-red-50 transition font-semibold" data-event-id="{{id}}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                <span>Leave</span>
+              </button>
+              {{else}}
+              <button class="join-event flex items-center gap-2 px-4 py-2 text-green-600 rounded-lg hover:bg-green-50 transition font-semibold" data-event-id="{{id}}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Join</span>
+              </button>
+              {{/if}}
+            {{/if}}
+          </div>
+
+          <!-- Comments Section -->
+          <div class="comment-section hidden" data-event-id="{{id}}">
+            <div class="p-4 space-y-3 max-h-96 overflow-y-auto">
+              {{#each Comments}}
+              <div class="flex gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                  {{substring User.name 0 1}}
+                </div>
+                <div class="flex-1">
+                  <div class="bg-gray-100 rounded-lg px-3 py-2">
+                    <p class="font-semibold text-sm text-gray-900">{{User.name}}</p>
+                    <p class="text-sm text-gray-700">{{content}}</p>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1 ml-3">{{formatDate created_at "MMM D, h:mm A"}}</p>
+                </div>
+              </div>
+              {{/each}}
+            </div>
+
+            <!-- Add Comment Form -->
+            <div class="p-4 border-t border-gray-100">
+              <form class="add-comment-form flex gap-2" data-event-id="{{id}}">
+                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                  {{substring ../user.name 0 1}}
+                </div>
+                <input type="text" name="content" placeholder="Write a comment..." class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required />
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-semibold text-sm">
+                  Post
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+        {{/each}}
+      {{else}}
+        <!-- No Events Message -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+          <div class="text-6xl mb-4">📅</div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">No Events Yet</h3>
+          <p class="text-gray-600">Check back later for upcoming events!</p>
+        </div>
+      {{/if}}
+
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div id="imageLightbox" class="hidden fixed inset-0 bg-black bg-opacity-95 z-[100] flex items-center justify-center">
+    <button id="closeLightbox" class="absolute top-4 right-4 text-white hover:text-gray-300 transition z-10">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Previous Button -->
+    <button id="prevImage" class="absolute left-4 text-white hover:text-gray-300 transition z-10 p-3 bg-black bg-opacity-50 rounded-full">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+
+    <!-- Image Container -->
+    <div class="relative max-w-7xl max-h-screen w-full h-full flex items-center justify-center p-4">
+      <img id="lightboxImage" src="" alt="" class="max-w-full max-h-full object-contain" />
+      
+      <!-- Image Counter -->
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-full text-sm">
+        <span id="currentImageIndex">1</span> / <span id="totalImages">1</span>
+      </div>
+    </div>
+
+    <!-- Next Button -->
+    <button id="nextImage" class="absolute right-4 text-white hover:text-gray-300 transition z-10 p-3 bg-black bg-opacity-50 rounded-full">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+<script>
+// Reaction System
+document.querySelectorAll('.reaction-btn').forEach(btn => {
+  const container = btn.closest('.reaction-container');
+  const picker = container.querySelector('.reaction-picker');
+  
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    picker.classList.toggle('hidden');
+  });
+
+  picker.querySelectorAll('.reaction-option').forEach(option => {
+    option.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const eventId = btn.dataset.eventId;
+      const reactionType = option.dataset.reaction;
+      
+      try {
+        const res = await fetch('/api/events/reaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventId, reactionType })
+        });
+        
+        if (res.ok) {
+          location.reload();
+        }
+      } catch (error) {
+        console.error('Reaction error:', error);
+      }
+      
+      picker.classList.add('hidden');
+    });
+  });
+});
+
+// Close reaction pickers when clicking outside
+document.addEventListener('click', () => {
+  document.querySelectorAll('.reaction-picker').forEach(p => p.classList.add('hidden'));
+});
+
+// Comment Toggle
+document.querySelectorAll('.comment-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const eventId = btn.dataset.eventId;
+    const section = document.querySelector(`.comment-section[data-event-id="${eventId}"]`);
+    section.classList.toggle('hidden');
+  });
+});
+
+// Add Comment
+document.querySelectorAll('.add-comment-form').forEach(form => {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const eventId = form.dataset.eventId;
+    const content = form.content.value.trim();
+    
+    if (!content) return;
+    
+    try {
+      const res = await fetch('/api/events/comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId, content })
+      });
+      
+      if (res.ok) {
+        location.reload();
+      }
+    } catch (error) {
+      console.error('Comment error:', error);
+    }
+  });
+});
+
+// Join Event
+document.querySelectorAll('.join-event').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const eventId = btn.dataset.eventId;
+    
+    try {
+      const res = await fetch(`/api/events/${eventId}/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        location.reload();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('Join error:', error);
+    }
+  });
+});
+
+// Leave Event
+document.querySelectorAll('.leave-event').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to leave this event?')) return;
+    
+    const eventId = btn.dataset.eventId;
+    
+    try {
+      const res = await fetch(`/api/events/${eventId}/leave`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (res.ok) {
+        location.reload();
+      }
+    } catch (error) {
+      console.error('Leave error:', error);
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// 📸 IMAGE LIGHTBOX GALLERY (Facebook-style)
+// ═══════════════════════════════════════════════════════════
+let currentImages = [];
+let currentImageIndex = 0;
+
+const lightbox = document.getElementById('imageLightbox');
+const lightboxImage = document.getElementById('lightboxImage');
+const currentIndexSpan = document.getElementById('currentImageIndex');
+const totalImagesSpan = document.getElementById('totalImages');
+const closeLightboxBtn = document.getElementById('closeLightbox');
+const prevImageBtn = document.getElementById('prevImage');
+const nextImageBtn = document.getElementById('nextImage');
+
+// Open lightbox when clicking on event images
+document.querySelectorAll('.event-image').forEach(img => {
+  img.addEventListener('click', function(e) {
+    e.stopPropagation();
+    
+    // Get all images from the parent container
+    const container = this.closest('[data-images]');
+    if (container) {
+      currentImages = JSON.parse(container.dataset.images);
+      currentImageIndex = parseInt(this.dataset.index) || 0;
+      
+      openLightbox();
+    }
+  });
+});
+
+function openLightbox() {
+  if (currentImages.length === 0) return;
+  
+  lightbox.classList.remove('hidden');
+  document.body.style.overflow = 'hidden'; // Prevent scrolling
+  updateLightboxImage();
+}
+
+function closeLightbox() {
+  lightbox.classList.add('hidden');
+  document.body.style.overflow = ''; // Restore scrolling
+}
+
+function updateLightboxImage() {
+  lightboxImage.src = currentImages[currentImageIndex];
+  currentIndexSpan.textContent = currentImageIndex + 1;
+  totalImagesSpan.textContent = currentImages.length;
+  
+  // Hide/show navigation buttons
+  prevImageBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
+  nextImageBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
+}
+
+function showPrevImage() {
+  currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
+  updateLightboxImage();
+}
+
+function showNextImage() {
+  currentImageIndex = (currentImageIndex + 1) % currentImages.length;
+  updateLightboxImage();
+}
+
+// Event listeners for lightbox controls
+closeLightboxBtn.addEventListener('click', closeLightbox);
+prevImageBtn.addEventListener('click', showPrevImage);
+nextImageBtn.addEventListener('click', showNextImage);
+
+// Close lightbox when clicking outside the image
+lightbox.addEventListener('click', function(e) {
+  if (e.target === lightbox) {
+    closeLightbox();
+  }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  if (!lightbox.classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      closeLightbox();
+    } else if (e.key === 'ArrowLeft') {
+      showPrevImage();
+    } else if (e.key === 'ArrowRight') {
+      showNextImage();
+    }
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+{{> head }}
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 min-h-screen">
+
+  <!-- Top Navigation Bar -->
+  <nav class="bg-gradient-to-r from-green-700 to-emerald-700 shadow-lg sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+          <img src="/uploads/OIP.jpg" alt="MSU Logo" class="w-8 h-8 rounded-full object-cover" />
+          <span>MinSU Events</span>
+        </h1>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="/dashboard" class="text-green-50 hover:text-white transition font-medium">📊 Dashboard</a>
+        <a href="/events" class="text-green-50 hover:text-white transition font-medium">🎉 Browse Events</a>
+        <a href="/calendar" class="text-green-50 hover:text-white transition font-medium">📅 Calendar</a>
+        <a href="/auth/logout" class="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition font-medium text-sm border border-white/30">
+          🚪 Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto px-4 py-8">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">🔔 Notifications</h1>
+      <p class="text-gray-600">Stay updated on your event submissions and approvals</p>
+    </div>
+
+    <!-- Notification Preferences -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+      <h2 class="text-lg font-bold text-gray-800 mb-4">⚙️ Notification Preferences</h2>
+      <div class="space-y-3">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+          <span class="text-gray-700">Email notifications when events are approved</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+          <span class="text-gray-700">Email notifications when events are denied</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded">
+          <span class="text-gray-700">Email notifications for status updates</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div id="notificationsContainer" class="space-y-4">
+      <!-- Notifications will load here via JavaScript -->
+      <div class="text-center py-12">
+        <div class="text-gray-400 text-lg">📭 Loading notifications...</div>
+      </div>
+    </div>
+
+  </div>
+
+  {{> footer }}
+
+  <script>
+    let eventSource = null;
+
+    // Connect to real-time notifications
+    function connectToNotifications() {
+      eventSource = new EventSource('/notifications/live');
+
+      eventSource.addEventListener('open', () => {
+        console.log('✅ Connected to real-time notifications');
+      });
+
+      eventSource.onmessage = (event) => {
+        try {
+          const notification = JSON.parse(event.data);
+          
+          if (notification.type === 'connected') {
+            console.log('📬 Real-time connection established');
+            loadNotifications();
+          } else if (notification.type === 'event_approved' || notification.type === 'event_denied') {
+            loadNotifications(); // Refresh on new notification
+            showToastNotification(notification);
+          }
+        } catch (e) {
+          console.error('Error parsing notification:', e);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error('❌ Notification connection error:', error);
+        eventSource.close();
+        // Reconnect after 5 seconds
+        setTimeout(connectToNotifications, 5000);
+      };
+    }
+
+    // Load notifications from API
+    async function loadNotifications() {
+      try {
+        const response = await fetch('/notifications/user');
+        const data = await response.json();
+        displayNotifications(data.notifications || []);
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
+    }
+
+    function displayNotifications(notifications) {
+      const container = document.getElementById('notificationsContainer');
+      
+      if (!notifications || notifications.length === 0) {
+        container.innerHTML = '<div class="text-center py-12"><div class="text-gray-400 text-lg">📭 No notifications yet. Check back later!</div></div>';
+        return;
+      }
+
+      container.innerHTML = notifications.map(notif => `
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 ${
+          notif.type === 'success' ? 'border-green-500' :
+          notif.type === 'error' ? 'border-red-500' :
+          'border-blue-500'
+        } hover:shadow-lg transition animate-slideDown">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">
+                <span class="text-2xl">${
+                  notif.type === 'success' ? '✅' :
+                  notif.type === 'error' ? '❌' :
+                  '📢'
+                }</span> ${notif.title}
+              </h3>
+              <p class="text-gray-600 mt-2">${notif.message}</p>
+              <p class="text-sm text-gray-500 mt-2">${new Date(notif.timestamp).toLocaleString()}</p>
+            </div>
+            <span class="px-3 py-1 ${
+              notif.type === 'success' ? 'bg-green-100 text-green-700' :
+              notif.type === 'error' ? 'bg-red-100 text-red-700' :
+              'bg-blue-100 text-blue-700'
+            } rounded-full text-xs font-semibold">${notif.status || 'Update'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showToastNotification(notification) {
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 p-6 rounded-lg text-white font-semibold shadow-lg animate-slideDown z-50 ${
+        notification.type === 'event_approved' ? 'bg-green-600' : 'bg-red-600'
+      }`;
+      toast.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">${notification.type === 'event_approved' ? '✅' : '❌'}</span>
+          <div>
+            <p>${notification.title}</p>
+            <p class="text-sm opacity-90">${notification.message}</p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }
+
+    // Connect on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      connectToNotifications();
+      loadNotifications();
+      // Refresh every 30 seconds
+      setInterval(loadNotifications, 30000);
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (eventSource) eventSource.close();
+    });
+  </script>
+
+  <style>
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slideDown {
+      animation: slideDown 0.4s ease-out;
+    }
+  </style>
+
+</body>
+</html>

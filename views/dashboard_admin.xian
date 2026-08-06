@@ -1,0 +1,662 @@
+{{> head }}
+<body class="bg-gray-100 min-h-screen flex">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════ -->
+<aside id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 left-0 z-40 transition-transform duration-300">
+
+  <!-- Logo -->
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-gray-700">
+    <img src="/uploads/OIP.jpg" alt="Logo" class="w-9 h-9 rounded-lg object-cover"/>
+    <div>
+      <p class="font-bold text-sm text-white">MinSU Admin</p>
+      <p class="text-xs text-gray-400">Event Management</p>
+    </div>
+  </div>
+
+  <!-- Admin info -->
+  <div class="px-5 py-4 border-b border-gray-700">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+        {{substring user.name 0 1}}
+      </div>
+      <div class="min-w-0">
+        <p class="text-sm font-semibold text-white truncate">{{user.name}}</p>
+        <p class="text-xs text-green-400">Administrator</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+
+    <button onclick="showSection('overview')" id="nav-overview"
+      class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:bg-gray-800 hover:text-white active-nav">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Overview
+    </button>
+
+    <button onclick="showSection('proposals')" id="nav-proposals"
+      class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:bg-gray-800 hover:text-white">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Event Proposals
+      {{#if stats.pendingEvents}}
+      <span class="ml-auto bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{stats.pendingEvents}}</span>
+      {{/if}}
+    </button>
+
+    <button onclick="showSection('schedule')" id="nav-schedule"
+      class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:bg-gray-800 hover:text-white">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Schedule
+    </button>
+
+    <button onclick="showSection('analytics')" id="nav-analytics"
+      class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:bg-gray-800 hover:text-white">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Analytics
+    </button>
+
+    <button onclick="showSection('users')" id="nav-users"
+      class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:bg-gray-800 hover:text-white">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Users
+    </button>
+
+    <button onclick="showSection('audit')" id="nav-audit"
+      class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:bg-gray-800 hover:text-white">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+      Audit Logs
+    </button>
+
+  </nav>
+
+  <!-- Logout -->
+  <div class="px-3 py-4 border-t border-gray-700">
+    <a href="/auth/logout"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-900/30 hover:text-red-300 transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      Logout
+    </a>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════ -->
+<div class="flex-1 ml-64 flex flex-col min-h-screen">
+
+  <!-- Top bar -->
+  <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="p-1.5 hover:bg-gray-100 rounded-lg transition">
+        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 id="pageTitle" class="text-base font-semibold text-gray-800">Overview</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <!-- Live clock -->
+      <span id="liveClock" class="text-xs text-gray-500 font-mono bg-gray-100 px-3 py-1.5 rounded-lg"></span>
+      <!-- Refresh -->
+      <button onclick="location.reload()" class="p-1.5 hover:bg-gray-100 rounded-lg transition" title="Refresh">
+        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Flash messages -->
+  <div class="px-6 pt-4">
+    {{#if success_msg}}
+    <div class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-lg text-sm flex items-center gap-2">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      {{success_msg}}
+    </div>
+    {{/if}}
+    {{#if error_msg}}
+    <div class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg text-sm flex items-center gap-2">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      {{error_msg}}
+    </div>
+    {{/if}}
+  </div>
+
+  <main class="flex-1 px-6 pb-8">
+
+<!-- ═══ SECTION: OVERVIEW ═══════════════════════════════════ -->
+<section id="section-overview" class="section pt-6">
+
+  <!-- Stats row -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
+      <div class="w-11 h-11 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div><p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Pending</p><p class="text-2xl font-bold text-yellow-600">{{stats.pendingEvents}}</p></div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
+      <div class="w-11 h-11 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div><p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Approved</p><p class="text-2xl font-bold text-green-600">{{stats.approvedEvents}}</p></div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
+      <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div><p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Total Users</p><p class="text-2xl font-bold text-blue-600">{{stats.totalUsers}}</p></div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
+      <div class="w-11 h-11 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+      </div>
+      <div><p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Participations</p><p class="text-2xl font-bold text-purple-600">{{stats.totalParticipations}}</p></div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <!-- Upcoming events -->
+    <div class="md:col-span-2 bg-white rounded-xl border border-gray-200">
+      <div class="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <h3 class="text-sm font-semibold text-gray-800">Upcoming Events (next 30 days)</h3>
+      </div>
+      <div class="divide-y divide-gray-100">
+        {{#if upcoming.length}}
+          {{#each upcoming}}
+          <div class="px-5 py-3 flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-gray-800">{{event_title}}</p>
+              <p class="text-xs text-gray-500">{{organizer_name}} &bull; {{venue}}</p>
+            </div>
+            <span class="text-xs text-gray-500 whitespace-nowrap ml-4">{{formatDate event_date "MMM D"}}</span>
+          </div>
+          {{/each}}
+        {{else}}
+          <div class="px-5 py-8 text-center text-gray-400 text-sm">No upcoming events in the next 30 days.</div>
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="bg-white rounded-xl border border-gray-200">
+      <div class="px-5 py-4 border-b border-gray-100">
+        <h3 class="text-sm font-semibold text-gray-800">System Overview</h3>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">Approval Rate</span>
+          <span class="font-bold text-green-600">{{stats.approvalRate}}%</span>
+        </div>
+        <div class="w-full bg-gray-100 rounded-full h-2">
+          <div class="bg-green-500 h-2 rounded-full" style="width: {{stats.approvalRate}}%"></div>
+        </div>
+        <div class="flex justify-between items-center text-sm pt-2">
+          <span class="text-gray-600">Organizers</span>
+          <span class="font-bold text-gray-800">{{stats.organizerUsers}}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">Participants</span>
+          <span class="font-bold text-gray-800">{{stats.participantUsers}}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">Total Events</span>
+          <span class="font-bold text-gray-800">{{stats.totalEvents}}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">Expired</span>
+          <span class="font-bold text-orange-600">{{stats.expiredEvents}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION: EVENT PROPOSALS ════════════════════════════ -->
+<section id="section-proposals" class="section pt-6 hidden">
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-800">Event Proposals</h2>
+      <div class="flex gap-1 bg-gray-100 rounded-lg p-1 text-xs font-medium">
+        <button onclick="filterProposals('all')" id="ptab-all" class="ptab px-3 py-1.5 rounded-md bg-white text-gray-800 shadow-sm">All</button>
+        <button onclick="filterProposals('Pending')" id="ptab-Pending" class="ptab px-3 py-1.5 rounded-md text-gray-500 hover:text-gray-700">Pending</button>
+        <button onclick="filterProposals('Approved')" id="ptab-Approved" class="ptab px-3 py-1.5 rounded-md text-gray-500 hover:text-gray-700">Approved</button>
+        <button onclick="filterProposals('Denied')" id="ptab-Denied" class="ptab px-3 py-1.5 rounded-md text-gray-500 hover:text-gray-700">Denied</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+          <tr>
+            <th class="px-5 py-3 text-left font-semibold">Organizer</th>
+            <th class="px-5 py-3 text-left font-semibold">Event</th>
+            <th class="px-5 py-3 text-left font-semibold">Department</th>
+            <th class="px-5 py-3 text-left font-semibold">Date</th>
+            <th class="px-5 py-3 text-left font-semibold">Venue</th>
+            <th class="px-5 py-3 text-left font-semibold">Status</th>
+            <th class="px-5 py-3 text-left font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="proposalsBody" class="divide-y divide-gray-100">
+          {{#each events}}
+          <tr class="hover:bg-gray-50 transition proposal-row" data-status="{{status}}">
+            <td class="px-5 py-4">
+              <p class="font-semibold text-gray-800">{{organizer_name}}</p>
+            </td>
+            <td class="px-5 py-4">
+              <p class="font-semibold text-gray-800">{{event_title}}</p>
+              <p class="text-xs text-gray-400 mt-0.5">Submitted {{formatDate created_at "MMM D, YYYY"}}</p>
+            </td>
+            <td class="px-5 py-4 text-gray-600">{{department}}</td>
+            <td class="px-5 py-4 text-gray-600 whitespace-nowrap">{{formatDate event_date "MMM D, YYYY"}}</td>
+            <td class="px-5 py-4 text-gray-600">{{venue}}</td>
+            <td class="px-5 py-4">
+              {{#ifCond status "Pending"}}
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-300">Pending</span>
+              {{/ifCond}}
+              {{#ifCond status "Approved"}}
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-300">Approved</span>
+              {{/ifCond}}
+              {{#ifCond status "Denied"}}
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-300">Denied</span>
+              {{/ifCond}}
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-2 flex-wrap">
+                {{#ifCond status "Pending"}}
+                  <a href="/admin/events/approve/{{id}}"
+                     class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Approve
+                  </a>
+                  <a href="/admin/events/deny/{{id}}"
+                     class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Deny
+                  </a>
+                {{/ifCond}}
+                {{#if proposal_file}}
+                  <button onclick="viewProposal('{{proposal_file}}')"
+                     class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-semibold transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    Proposal
+                  </button>
+                {{/if}}
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION: SCHEDULE CALENDAR ══════════════════════════ -->
+<section id="section-schedule" class="section pt-6 hidden">
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-800">Event Schedule Calendar</h2>
+      <div class="flex items-center gap-4 text-xs text-gray-500">
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>Today</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>Approved</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>Pending</span>
+      </div>
+    </div>
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <button type="button" id="calPrev" class="p-2 hover:bg-gray-100 rounded-lg transition">
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span id="calTitle" class="text-base font-bold text-gray-800"></span>
+        <button type="button" id="calNext" class="p-2 hover:bg-gray-100 rounded-lg transition">
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 mb-1">
+        <div class="py-2">Sun</div><div class="py-2">Mon</div><div class="py-2">Tue</div>
+        <div class="py-2">Wed</div><div class="py-2">Thu</div><div class="py-2">Fri</div><div class="py-2">Sat</div>
+      </div>
+      <div id="calGrid" class="grid grid-cols-7 gap-1 text-sm"></div>
+      <div id="calDayPanel" class="hidden mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+        <h3 class="text-sm font-bold text-gray-700 mb-3" id="calDayTitle"></h3>
+        <div id="calDayEvents" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION: ANALYTICS ══════════════════════════════════ -->
+<section id="section-analytics" class="section pt-6 hidden">
+  <div class="grid md:grid-cols-2 gap-4 mb-4">
+    <div class="bg-white rounded-xl border border-gray-200 p-5">
+      <h3 class="text-sm font-semibold text-gray-800 mb-4">Event Status Distribution</h3>
+      <canvas id="pieChart" height="220"></canvas>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-5">
+      <h3 class="text-sm font-semibold text-gray-800 mb-4">Events by Department</h3>
+      <canvas id="barChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <h3 class="text-sm font-semibold text-gray-800 mb-4">Monthly Submissions (Last 6 Months)</h3>
+    <canvas id="lineChart" height="100"></canvas>
+  </div>
+</section>
+
+<!-- ═══ SECTION: USERS ═══════════════════════════════════════ -->
+<section id="section-users" class="section pt-6 hidden">
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-800">Recent Users</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+          <tr>
+            <th class="px-5 py-3 text-left font-semibold">Name</th>
+            <th class="px-5 py-3 text-left font-semibold">Email</th>
+            <th class="px-5 py-3 text-left font-semibold">Role</th>
+            <th class="px-5 py-3 text-left font-semibold">Status</th>
+            <th class="px-5 py-3 text-left font-semibold">Joined</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {{#each recentUsers}}
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-5 py-3 font-semibold text-gray-800">{{name}}</td>
+            <td class="px-5 py-3 text-gray-600">{{email}}</td>
+            <td class="px-5 py-3">
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                {{#ifCond role 'admin'}}bg-purple-100 text-purple-700{{/ifCond}}
+                {{#ifCond role 'organizer'}}bg-blue-100 text-blue-700{{/ifCond}}
+                {{#ifCond role 'participant'}}bg-gray-100 text-gray-700{{/ifCond}}">
+                {{role}}
+              </span>
+            </td>
+            <td class="px-5 py-3">
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                {{#ifCond status 'active'}}bg-green-100 text-green-700{{/ifCond}}
+                {{#ifCond status 'banned'}}bg-red-100 text-red-700{{/ifCond}}
+                {{#ifCond status 'pending'}}bg-yellow-100 text-yellow-700{{/ifCond}}">
+                {{status}}
+              </span>
+            </td>
+            <td class="px-5 py-3 text-gray-500 text-xs">{{formatDate created_at "MMM D, YYYY"}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION: AUDIT LOGS ══════════════════════════════════ -->
+<section id="section-audit" class="section pt-6 hidden">
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-800">Audit Logs — Recent Event Activity</h2>
+      <span class="text-xs text-gray-400">Last 20 actions</span>
+    </div>
+    <div class="divide-y divide-gray-100">
+      {{#each auditLogs}}
+      <div class="px-6 py-3 flex items-start gap-4 hover:bg-gray-50 transition">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
+          {{#ifCond status 'Approved'}}bg-green-100{{/ifCond}}
+          {{#ifCond status 'Pending'}}bg-yellow-100{{/ifCond}}
+          {{#ifCond status 'Denied'}}bg-red-100{{/ifCond}}">
+          {{#ifCond status 'Approved'}}
+            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          {{/ifCond}}
+          {{#ifCond status 'Pending'}}
+            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          {{/ifCond}}
+          {{#ifCond status 'Denied'}}
+            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          {{/ifCond}}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-gray-800">
+            <span class="font-semibold">{{organizer_name}}</span>
+            submitted <span class="font-semibold text-gray-900">"{{event_title}}"</span>
+          </p>
+          <p class="text-xs text-gray-400 mt-0.5">Status: <span class="font-medium
+            {{#ifCond status 'Approved'}}text-green-600{{/ifCond}}
+            {{#ifCond status 'Pending'}}text-yellow-600{{/ifCond}}
+            {{#ifCond status 'Denied'}}text-red-600{{/ifCond}}">{{status}}</span>
+            &bull; Updated {{formatDate updated_at "MMM D, YYYY h:mm A"}}
+          </p>
+        </div>
+        <span class="text-xs text-gray-400 whitespace-nowrap">{{formatDate created_at "MMM D"}}</span>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<!-- Proposal Viewer Modal -->
+<div id="proposalModal" class="fixed inset-0 z-50 items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display:none;">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden" style="height:85vh;">
+    <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200 flex-shrink-0">
+      <span class="font-semibold text-gray-800 text-sm" id="proposalFileName">Proposal</span>
+      <div class="flex items-center gap-2">
+        <a id="proposalDownloadBtn" href="#" download class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition">Download</a>
+        <button onclick="closeProposal()" class="p-1.5 hover:bg-gray-100 rounded-lg transition text-gray-500">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="flex-1 overflow-hidden bg-gray-50" id="proposalBody" style="min-height:0;"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+// ── Sidebar & navigation ──────────────────────────────────
+const sections = ['overview','proposals','schedule','analytics','users','audit'];
+const titles   = { overview:'Overview', proposals:'Event Proposals', schedule:'Schedule', analytics:'Analytics', users:'Users', audit:'Audit Logs' };
+
+function showSection(name) {
+  sections.forEach(s => {
+    document.getElementById('section-' + s).classList.toggle('hidden', s !== name);
+    const btn = document.getElementById('nav-' + s);
+    if (s === name) {
+      btn.classList.add('bg-gray-800','text-white');
+      btn.classList.remove('text-gray-300');
+    } else {
+      btn.classList.remove('bg-gray-800','text-white');
+      btn.classList.add('text-gray-300');
+    }
+  });
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+  if (name === 'analytics') initCharts();
+  if (name === 'schedule')  renderCalendar();
+  location.hash = name;
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const main = sb.nextElementSibling;
+  if (sb.style.transform === 'translateX(-100%)') {
+    sb.style.transform = '';
+    main.style.marginLeft = '16rem';
+  } else {
+    sb.style.transform = 'translateX(-100%)';
+    main.style.marginLeft = '0';
+  }
+}
+
+// ── Live clock ────────────────────────────────────────────
+function updateClock() {
+  document.getElementById('liveClock').textContent = new Date().toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Proposal filter ───────────────────────────────────────
+function filterProposals(status) {
+  document.querySelectorAll('.ptab').forEach(b => {
+    b.classList.toggle('bg-white', b.id === 'ptab-' + status);
+    b.classList.toggle('shadow-sm', b.id === 'ptab-' + status);
+    b.classList.toggle('text-gray-800', b.id === 'ptab-' + status);
+    b.classList.toggle('text-gray-500', b.id !== 'ptab-' + status);
+  });
+  document.querySelectorAll('.proposal-row').forEach(row => {
+    row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+  });
+}
+
+// ── Proposal viewer ───────────────────────────────────────
+function viewProposal(filePath) {
+  const modal = document.getElementById('proposalModal');
+  const body  = document.getElementById('proposalBody');
+  const name  = document.getElementById('proposalFileName');
+  const dl    = document.getElementById('proposalDownloadBtn');
+  const ext   = filePath.split('.').pop().toLowerCase();
+  name.textContent = decodeURIComponent(filePath.split('/').pop());
+  dl.href = filePath;
+  if (ext === 'pdf') {
+    body.innerHTML = `<iframe src="${filePath}" class="w-full h-full border-0" style="height:100%;"></iframe>`;
+  } else if (['png','jpg','jpeg','gif','webp'].includes(ext)) {
+    body.innerHTML = `<div class="w-full h-full flex items-center justify-center p-6"><img src="${filePath}" class="max-w-full max-h-full object-contain rounded-lg shadow-lg"/></div>`;
+  } else {
+    const enc = encodeURIComponent(window.location.origin + filePath);
+    body.innerHTML = `<iframe src="https://docs.google.com/viewer?url=${enc}&embedded=true" class="w-full h-full border-0" style="height:100%;"></iframe>`;
+  }
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeProposal() {
+  document.getElementById('proposalModal').style.display = 'none';
+  document.getElementById('proposalBody').innerHTML = '';
+  document.body.style.overflow = '';
+}
+document.getElementById('proposalModal').addEventListener('click', e => { if (e.target === document.getElementById('proposalModal')) closeProposal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProposal(); });
+
+// ── Calendar ──────────────────────────────────────────────
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+let calYear, calMonth, calEvents = [];
+
+async function loadCalEvents() {
+  try {
+    const res = await fetch('/api/booked-dates');
+    const d   = await res.json();
+    calEvents = d.events || [];
+  } catch(e) { calEvents = []; }
+  // merge pending from page
+  const page = {{{json events}}};
+  page.forEach(ev => { if (ev.status === 'Pending' && !calEvents.find(e => e.id === ev.id)) calEvents.push(ev); });
+}
+
+function renderCalendar() {
+  if (!calYear) { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); }
+  document.getElementById('calTitle').textContent = `${MONTHS[calMonth]} ${calYear}`;
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const days     = new Date(calYear, calMonth + 1, 0).getDate();
+  const today    = new Date();
+  let html = '';
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  for (let d = 1; d <= days; d++) {
+    const ds = new Date(calYear, calMonth, d, 0, 0, 0);
+    const de = new Date(calYear, calMonth, d, 23, 59, 59);
+    const isToday = ds.toDateString() === today.toDateString();
+    const evs = calEvents.filter(ev => new Date(ev.event_date) <= de && new Date(ev.event_end_date || ev.event_date) >= ds);
+    const approved = evs.filter(e => e.status === 'Approved');
+    const pending  = evs.filter(e => e.status === 'Pending');
+    let cls = 'rounded-xl py-2 px-1 text-center text-xs font-medium transition select-none ';
+    if (isToday)      cls += 'bg-green-500 text-white font-bold ring-2 ring-green-300 ';
+    else if (evs.length) cls += 'bg-blue-50 text-blue-800 hover:bg-blue-100 font-semibold cursor-pointer ';
+    else              cls += 'text-gray-600 hover:bg-gray-100 ';
+    const dots = (approved.length ? '<span class="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block"></span>' : '') +
+                 (pending.length  ? '<span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>' : '');
+    const enc = evs.length ? `data-day="${d}" data-evs="${encodeURIComponent(JSON.stringify(evs))}" onclick="showCalDay(this)"` : '';
+    html += `<div class="${cls}" ${enc}>${d}${dots ? `<div class="flex justify-center gap-0.5 mt-0.5">${dots}</div>` : ''}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+  document.getElementById('calDayPanel').classList.add('hidden');
+}
+
+function showCalDay(el) {
+  const d    = el.getAttribute('data-day');
+  const evs  = JSON.parse(decodeURIComponent(el.getAttribute('data-evs')));
+  const panel = document.getElementById('calDayPanel');
+  document.getElementById('calDayTitle').textContent = `${MONTHS[calMonth]} ${d}, ${calYear}`;
+  document.getElementById('calDayEvents').innerHTML = evs.map(ev => {
+    const sc = ev.status === 'Approved' ? 'bg-green-100 text-green-700 border-green-200' : ev.status === 'Pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' : 'bg-red-100 text-red-700 border-red-200';
+    const st = new Date(ev.event_date).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    const en = ev.event_end_date ? ' – ' + new Date(ev.event_end_date).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
+    return `<div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-gray-200">
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-gray-800 text-sm">${ev.event_title}</p>
+        <p class="text-xs text-gray-500">${ev.organizer_name || ''} &bull; ${ev.venue || ''}</p>
+        <p class="text-xs text-gray-400">${st}${en}</p>
+      </div>
+      <span class="px-2 py-0.5 rounded-full text-xs font-bold border ${sc} flex-shrink-0">${ev.status}</span>
+    </div>`;
+  }).join('');
+  panel.classList.remove('hidden');
+}
+
+document.getElementById('calPrev').addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+document.getElementById('calNext').addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+
+// ── Charts ────────────────────────────────────────────────
+let chartsInit = false;
+function initCharts() {
+  if (chartsInit) return;
+  chartsInit = true;
+
+  const monthLabels = {{{stats.monthLabels}}};
+  const monthCounts = {{{stats.monthCounts}}};
+  const deptLabels  = {{{stats.deptLabels}}};
+  const deptCounts  = {{{stats.deptCounts}}};
+
+  new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Approved', 'Pending', 'Denied'],
+      datasets: [{ data: [{{stats.approvedEvents}}, {{stats.pendingEvents}}, {{stats.deniedEvents}}],
+        backgroundColor: ['#10b981','#f59e0b','#ef4444'], borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: deptLabels.length ? deptLabels : ['No Data'],
+      datasets: [{ label: 'Events', data: deptCounts.length ? deptCounts : [0],
+        backgroundColor: '#3b82f6', borderRadius: 6 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+
+  new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+      labels: monthLabels,
+      datasets: [{ label: 'Submissions', data: monthCounts,
+        borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)',
+        tension: 0.4, fill: true, pointBackgroundColor: '#8b5cf6' }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+loadCalEvents();
+const hash = location.hash.replace('#','') || 'overview';
+showSection(sections.includes(hash) ? hash : 'overview');
+</script>
+
+<style>
+  .active-nav { background-color: #1f2937; color: white; }
+</style>
+
+</body>
+</html>

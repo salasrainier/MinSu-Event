@@ -1,0 +1,236 @@
+{{> head}}
+<body class="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 flex items-center justify-center min-h-screen p-4">
+
+  <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-green-100 animate-fadeIn">
+
+    <!-- Premium Banner -->
+    <div class="bg-gradient-to-r from-green-700 to-emerald-600 text-white text-center py-8 px-6 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-5"></div>
+      <div class="flex items-center justify-center gap-3 mb-3 relative z-10">
+        <img src="/uploads/OIP.jpg" alt="MSU Logo" class="w-10 h-10 rounded-full object-cover" />
+        <h1 class="text-3xl font-bold tracking-tight">MinSU Events</h1>
+      </div>
+      <p class="text-sm text-green-100 relative z-10 font-medium">Join MinSU Community</p>
+    </div>
+
+    <div class="p-8">
+      <h2 class="text-3xl font-bold mb-2 text-center text-green-900">Create Account</h2>
+      <p class="text-center text-gray-600 text-sm mb-8">Sign up to start submitting events</p>
+
+      <div id="notif" class="mb-6 hidden p-4 rounded-xl text-sm font-medium transition-all duration-300"></div>
+
+      <form id="registerForm" method="POST" novalidate class="space-y-5">
+
+        <!-- Name Field -->
+        <div class="group">
+          <label for="regName" class="block text-sm font-semibold text-green-900 mb-2.5">Full Name</label>
+          <div class="relative">
+            <input type="text" id="regName" name="name" placeholder="John Doe" autocomplete="name"
+                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300" required />
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="group">
+          <label for="regEmail" class="block text-sm font-semibold text-green-900 mb-2.5">Email Address</label>
+          <div class="relative">
+            <input type="email" id="regEmail" name="email" placeholder="you@example.com" autocomplete="email"
+                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300" required />
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="group">
+          <fieldset>
+            <legend class="block text-sm font-semibold text-green-900 mb-2.5">I am a:</legend>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="relative flex items-center p-3 border-2 border-green-200 rounded-xl cursor-pointer hover:border-green-400 transition-all duration-200 has-[:checked]:bg-green-50 has-[:checked]:border-green-600">
+                <input type="radio" id="roleParticipant" name="role" value="participant" required class="absolute w-4 h-4 cursor-pointer" checked />
+                <span class="ml-6 text-sm font-semibold text-gray-700">👤 Participant</span>
+              </label>
+              <label class="relative flex items-center p-3 border-2 border-green-200 rounded-xl cursor-pointer hover:border-green-400 transition-all duration-200 has-[:checked]:bg-green-50 has-[:checked]:border-green-600">
+                <input type="radio" id="roleOrganizer" name="role" value="organizer" required class="absolute w-4 h-4 cursor-pointer" />
+                <span class="ml-6 text-sm font-semibold text-gray-700">📋 Organizer</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Department Field (for organizers) -->
+        <div class="group hidden" id="departmentGroup">
+          <label for="regDepartment" class="block text-sm font-semibold text-green-900 mb-2.5">Department/Office</label>
+          <div class="relative">
+            <input type="text" id="regDepartment" name="department" placeholder="e.g., CCS, HM, Education" autocomplete="organization"
+                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300" />
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="group">
+          <label for="regPassword" class="block text-sm font-semibold text-green-900 mb-2.5">Password</label>
+          <div class="relative">
+            <input type="password" name="password" id="regPassword" placeholder="••••••••" autocomplete="new-password"
+                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300 pr-12" required />
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <button type="button" id="regTogglePass" class="absolute right-3 top-3 text-green-600 hover:text-green-800 hover:scale-110 transition-all duration-150 p-1.5 rounded-lg hover:bg-green-50 cursor-pointer active:scale-95">
+              <!-- Eye open icon -->
+              <svg class="w-5 h-5 eye-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              </svg>
+              <!-- Eye closed with slash icon -->
+              <svg class="w-5 h-5 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none;">
+                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/>
+              </svg>
+            </button>
+          </div>
+          <p class="text-xs text-gray-600 mt-1.5 font-medium">Minimum 6 characters required</p>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 flex items-center justify-center gap-2 text-base mt-7">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          Create Account
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="relative my-7">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-green-200"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white text-gray-500 font-medium">Already a member?</span>
+        </div>
+      </div>
+
+      <!-- Login Link -->
+      <p class="text-center text-gray-700">
+        <a href="/auth/login" class="text-green-600 font-bold hover:text-green-700 transition duration-200">Sign in instead</a>
+      </p>
+    </div>
+
+    <div class="bg-green-50 border-t border-green-100 py-4 text-center text-gray-500 text-xs">
+      {{> footer}}
+    </div>
+  </div>
+
+<script>
+// Optimized password toggle for register
+const regToggleBtn = document.getElementById("regTogglePass");
+const regPasswordInput = document.getElementById("regPassword");
+
+regToggleBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  const isPassword = regPasswordInput.type === "password";
+  regPasswordInput.type = isPassword ? "text" : "password";
+  
+  // Toggle eye icon visibility
+  const eyeOpen = regToggleBtn.querySelector(".eye-open");
+  const eyeClosed = regToggleBtn.querySelector(".eye-closed");
+  
+  if (isPassword) {
+    eyeOpen.style.display = "none";
+    eyeClosed.style.display = "block";
+  } else {
+    eyeOpen.style.display = "block";
+    eyeClosed.style.display = "none";
+  }
+  
+  // Smooth SVG icon transition
+  regToggleBtn.classList.add("scale-110");
+  setTimeout(() => regToggleBtn.classList.remove("scale-110"), 200);
+});
+
+// Toggle department field based on role
+const roleInputs = document.querySelectorAll('input[name="role"]');
+const departmentGroup = document.getElementById('departmentGroup');
+
+roleInputs.forEach(input => {
+  input.addEventListener('change', (e) => {
+    if (e.target.value === 'organizer') {
+      departmentGroup.classList.remove('hidden');
+    } else {
+      departmentGroup.classList.add('hidden');
+    }
+  });
+});
+
+const regForm=document.getElementById("registerForm");
+const notif=document.getElementById("notif");
+let isSubmitting = false;
+
+regForm.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  if (isSubmitting) return;
+  isSubmitting = true;
+
+  const submitBtn = regForm.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.classList.add('opacity-75');
+
+  const fd=new FormData(regForm);
+  
+  try {
+    const res=await fetch("/auth/register",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json","Accept":"application/json" },
+      credentials:"include",
+      body:JSON.stringify({
+        name:fd.get("name"),
+        email:fd.get("email"),
+        password:fd.get("password"),
+        role:fd.get("role"),
+        department:fd.get("department")
+      })
+    });
+
+    const result=await res.json();
+    showMsg(result.message,result.success?"green":"red");
+    if(result.success){ 
+      setTimeout(()=>location.href="/auth/login",1500); 
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-75');
+      isSubmitting = false;
+    }
+  } catch (error) {
+    showMsg('Connection error. Please try again.', 'red');
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('opacity-75');
+    isSubmitting = false;
+  }
+});
+
+function showMsg(msg,type){
+  notif.textContent=msg;
+  notif.className=`mb-4 p-4 rounded-xl text-sm font-medium transition-all duration-300 ${
+    type==="red"?"bg-red-100 text-red-700 border border-red-300":"bg-green-100 text-green-700 border border-green-300"
+  }`;
+  notif.classList.remove("hidden");
+  setTimeout(() => notif.classList.add('hidden'), 5000);
+}
+</script>
+
+<style>
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+.animate-bounce { animation: bounce 1s infinite; }
+.bg-grid { background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 50px 50px; }
+</style>
+
+</body>

@@ -1,0 +1,530 @@
+{{> head }}
+<body class="min-h-screen bg-white text-gray-800 overflow-x-hidden">
+
+  {{#if user}}
+    <!-- Logged In: Use Consistent Navbar -->
+    {{> navbar }}
+  {{else}}
+    <!-- Logged Out: Use Landing Page Navbar -->
+    <header class="bg-white shadow-md sticky top-0 z-50 border-b border-gray-200">
+      <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <img src="/uploads/OIP.jpg" alt="MSU Logo" class="w-10 h-10 rounded-full object-cover shadow-md" />
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">MinSU Events</h1>
+            <p class="text-xs text-gray-500">Mindoro State University</p>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+          <a href="/" class="text-gray-700 hover:text-green-600 transition">Home</a>
+          <a href="#features" class="text-gray-700 hover:text-green-600 transition">Features</a>
+          <a href="#how-it-works" class="text-gray-700 hover:text-green-600 transition">How It Works</a>
+        </nav>
+
+        <!-- Auth Buttons -->
+        <div class="flex items-center gap-4">
+          <a href="/auth/login" class="text-gray-700 hover:text-green-600 font-medium transition">
+            Sign In
+          </a>
+          <a href="/auth/register" class="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition font-semibold text-sm shadow-md hover:shadow-lg">
+            Get Started
+          </a>
+        </div>
+      </div>
+    </header>
+  {{/if}}
+
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-green-50 via-white to-emerald-50 py-20 px-6 overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute top-20 left-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+      <div class="absolute top-40 right-10 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+      <div class="absolute -bottom-8 left-1/2 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+    </div>
+    
+    <div class="container mx-auto max-w-6xl relative z-10">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- Left Content -->
+        <div class="animate-slideInLeft">
+          <div class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            <span>Official MinSU Platform</span>
+          </div>
+          <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Streamline Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">Campus Events</span>
+          </h1>
+          <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+            The complete event management solution for Mindoro State University. Plan, approve, and execute campus events with ease.
+          </p>
+          
+          <div class="flex flex-wrap gap-4">
+            {{#if user}}
+              {{#ifCond user.role "admin"}}
+                <a href="/admin/dashboard" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  </svg>
+                  Admin Dashboard
+                </a>
+              {{/ifCond}}
+              {{#ifCond user.role "organizer"}}
+                <a href="/submit-event" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  Submit Event
+                </a>
+              {{/ifCond}}
+              {{#ifCond user.role "participant"}}
+                <a href="/events" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  Browse Events
+                </a>
+              {{/ifCond}}
+            {{else}}
+              <a href="/auth/register" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Get Started Free
+              </a>
+              <a href="/auth/login" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition border-2 border-gray-200 hover:border-green-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                Sign In
+              </a>
+            {{/if}}
+          </div>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-gray-200">
+            <div>
+              <div class="text-3xl font-bold text-green-600">500+</div>
+              <div class="text-sm text-gray-600">Events Managed</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-green-600">1,200+</div>
+              <div class="text-sm text-gray-600">Active Users</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-green-600">95%</div>
+              <div class="text-sm text-gray-600">Satisfaction</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Content - Illustration -->
+        <div class="relative animate-slideInRight">
+          <div class="relative">
+            <img src="/uploads/QW.jpg" alt="Event Management" class="rounded-2xl shadow-2xl w-full h-auto" />
+            <!-- Floating Cards -->
+            <div class="absolute -top-6 -left-6 bg-white rounded-xl shadow-xl p-4 animate-float">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-sm font-semibold text-gray-800">Quick Approval</div>
+                  <div class="text-xs text-gray-500">In 24 hours</div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-xl p-4 animate-float animation-delay-2000">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-sm font-semibold text-gray-800">1,200+ Users</div>
+                  <div class="text-xs text-gray-500">Active community</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 px-6 bg-white">
+    <div class="container mx-auto max-w-6xl">
+      <div class="text-center mb-16 animate-fadeIn">
+        <div class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"/>
+          </svg>
+          <span>Powerful Features</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Everything You Need</h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive tools designed for seamless event management at MinSU</p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="group bg-white rounded-2xl p-8 border border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300 animate-fadeInUp">
+          <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Easy Event Submission</h3>
+          <p class="text-gray-600 leading-relaxed">Submit event proposals with detailed information, venue selection, and document uploads in minutes.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="group bg-white rounded-2xl p-8 border border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300 animate-fadeInUp animation-delay-200">
+          <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Streamlined Approvals</h3>
+          <p class="text-gray-600 leading-relaxed">Fast-track approval process with admin dashboards for efficient review and decision-making.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="group bg-white rounded-2xl p-8 border border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300 animate-fadeInUp animation-delay-400">
+          <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Interactive Calendar</h3>
+          <p class="text-gray-600 leading-relaxed">View all university events in a beautiful calendar interface with conflict detection.</p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="group bg-white rounded-2xl p-8 border border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300 animate-fadeInUp animation-delay-600">
+          <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Real-Time Analytics</h3>
+          <p class="text-gray-600 leading-relaxed">Track event performance, attendance, and engagement with comprehensive analytics dashboards.</p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="group bg-white rounded-2xl p-8 border border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300 animate-fadeInUp animation-delay-800">
+          <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Notifications</h3>
+          <p class="text-gray-600 leading-relaxed">Stay updated with instant notifications for event status changes and important updates.</p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="group bg-white rounded-2xl p-8 border border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300 animate-fadeInUp animation-delay-1000">
+          <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Secure & Role-Based</h3>
+          <p class="text-gray-600 leading-relaxed">Enterprise-grade security with role-based access control for organizers, admins, and participants.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-20 px-6 bg-gradient-to-br from-gray-50 to-green-50">
+    <div class="container mx-auto max-w-6xl">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+          </svg>
+          <span>Simple Process</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">How It Works</h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">Get started in four simple steps</p>
+      </div>
+      
+      <div class="relative">
+        <!-- Connection Line -->
+        <div class="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-green-200 via-green-400 to-emerald-400 transform -translate-y-1/2"></div>
+        
+        <div class="grid md:grid-cols-4 gap-8 relative">
+          <!-- Step 1 -->
+          <div class="text-center animate-fadeInUp">
+            <div class="relative inline-block mb-6">
+              <div class="w-20 h-20 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl transform hover:scale-110 transition-transform">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+              </div>
+              <div class="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center font-bold text-green-600 shadow-md border-2 border-green-600">1</div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Create Account</h3>
+            <p class="text-gray-600">Register as an organizer, participant, or admin</p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="text-center animate-fadeInUp animation-delay-200">
+            <div class="relative inline-block mb-6">
+              <div class="w-20 h-20 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl transform hover:scale-110 transition-transform">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </div>
+              <div class="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center font-bold text-green-600 shadow-md border-2 border-green-600">2</div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Submit Event</h3>
+            <p class="text-gray-600">Fill out event details and upload documents</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="text-center animate-fadeInUp animation-delay-400">
+            <div class="relative inline-block mb-6">
+              <div class="w-20 h-20 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl transform hover:scale-110 transition-transform">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+              </div>
+              <div class="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center font-bold text-green-600 shadow-md border-2 border-green-600">3</div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Get Approved</h3>
+            <p class="text-gray-600">Admins review and approve your proposal</p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="text-center animate-fadeInUp animation-delay-600">
+            <div class="relative inline-block mb-6">
+              <div class="w-20 h-20 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl transform hover:scale-110 transition-transform">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div class="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center font-bold text-green-600 shadow-md border-2 border-green-600">4</div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Execute Event</h3>
+            <p class="text-gray-600">Host your successful campus event</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 px-6 bg-gradient-to-r from-green-600 to-emerald-600 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+    </div>
+    <div class="container mx-auto max-w-4xl text-center relative z-10">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Get Started?</h2>
+      <p class="text-xl text-green-100 mb-8 max-w-2xl mx-auto">Join hundreds of MinSU students and faculty managing events efficiently</p>
+      <div class="flex justify-center gap-4 flex-wrap">
+        {{#if user}}
+          {{#ifCond user.role "organizer"}}
+            <a href="/submit-event" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-green-600 rounded-lg font-bold hover:bg-gray-50 transition shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Submit Your Event
+            </a>
+          {{/ifCond}}
+        {{else}}
+          <a href="/auth/register" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-green-600 rounded-lg font-bold hover:bg-gray-50 transition shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Create Free Account
+          </a>
+          <a href="/auth/login" class="inline-flex items-center gap-2 px-8 py-4 bg-green-700 text-white rounded-lg font-bold hover:bg-green-800 transition border-2 border-white/30">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+            Sign In
+          </a>
+        {{/if}}
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-300 py-12 px-6">
+    <div class="container mx-auto max-w-6xl">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <img src="/uploads/OIP.jpg" alt="MSU Logo" class="w-8 h-8 rounded-full" />
+            <h3 class="text-white font-bold text-lg">MinSU Events</h3>
+          </div>
+          <p class="text-sm text-gray-400 leading-relaxed">Professional event management platform for Mindoro State University community.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Platform</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#features" class="hover:text-green-400 transition">Features</a></li>
+            <li><a href="#how-it-works" class="hover:text-green-400 transition">How It Works</a></li>
+            <li><a href="/events" class="hover:text-green-400 transition">Browse Events</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">University</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-green-400 transition">About MinSU</a></li>
+            <li><a href="#" class="hover:text-green-400 transition">Contact Us</a></li>
+            <li><a href="#" class="hover:text-green-400 transition">Support</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-green-400 transition">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-green-400 transition">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-green-400 transition">Guidelines</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-sm text-gray-400">&copy; 2025 MinSU Events. Mindoro State University. All rights reserved.</p>
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-gray-400 hover:text-green-400 transition">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-green-400 transition">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Action Buttons -->
+  {{#unless user}}
+    <div class="fixed bottom-8 right-8 z-50 flex flex-col gap-4">
+      <!-- Main FAB -->
+      <a href="/auth/register" class="group relative">
+        <div class="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform animate-bounce-slow">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </div>
+        <div class="absolute right-20 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          Get Started
+        </div>
+      </a>
+      
+      <!-- Help FAB -->
+      <a href="#how-it-works" class="group relative">
+        <div class="w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform border-2 border-gray-200">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="absolute right-20 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          Need Help?
+        </div>
+      </a>
+    </div>
+  {{/unless}}
+
+  <!-- Scroll to Top Button -->
+  <button id="scrollToTop" class="fixed bottom-8 left-8 w-12 h-12 bg-gray-800 text-white rounded-full shadow-lg flex items-center justify-center opacity-0 pointer-events-none transition-all hover:bg-gray-700 z-50">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  {{> footer }}
+
+  <style>
+    /* Animations */
+    @keyframes blob {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, -50px) scale(1.1); }
+      50% { transform: translate(-20px, 20px) scale(0.9); }
+      75% { transform: translate(50px, 50px) scale(1.05); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .animate-blob { animation: blob 7s infinite; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
+    .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
+    .animate-slideInLeft { animation: slideInLeft 0.8s ease-out forwards; }
+    .animate-slideInRight { animation: slideInRight 0.8s ease-out forwards; }
+    .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+    
+    .animation-delay-200 { animation-delay: 0.2s; }
+    .animation-delay-400 { animation-delay: 0.4s; }
+    .animation-delay-600 { animation-delay: 0.6s; }
+    .animation-delay-800 { animation-delay: 0.8s; }
+    .animation-delay-1000 { animation-delay: 1s; }
+    .animation-delay-2000 { animation-delay: 2s; }
+    .animation-delay-4000 { animation-delay: 4s; }
+    
+    /* Smooth Scroll */
+    html { scroll-behavior: smooth; }
+  </style>
+
+  <script>
+    // Scroll to Top Button
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+        scrollToTopBtn.classList.add('opacity-100');
+      } else {
+        scrollToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+        scrollToTopBtn.classList.remove('opacity-100');
+      }
+    });
+    
+    scrollToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+</body>
+</html>
