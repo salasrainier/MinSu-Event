@@ -10,6 +10,7 @@ import eventFeedRoutes from "./routes/eventFeedRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import debugRoutes from "./routes/debugRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 import fs from "fs";
 import hbs from "hbs";
 import { fileURLToPath } from "url";
@@ -166,6 +167,7 @@ app.use("/api", eventFeedRoutes);
 app.use("/api", calendarRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/debug", debugRoutes);
+app.use("/", profileRoutes);
 
 /* ──────────────────────────────
    DATABASE SYNC & MIGRATION
