@@ -8,7 +8,7 @@
 import { Sequelize } from "sequelize";
 
 export const sequelize = new Sequelize(
-  process.env.DB_NAME || "defaultdb",
+  process.env.DB_NAME || "railway",
   process.env.DB_USER || "root",
   process.env.DB_PASSWORD || "",
   {
@@ -27,17 +27,16 @@ export const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000
     },
-   dialectOptions: {
-  supportBigNumbers: true,
-  bigNumberStrings: true,
-  ssl: {
-    rejectUnauthorized: false
-  },
-  waitForConnections: true,
-  enableKeepAlive: true,
-  decimalNumbers: true,
-},
-
+    dialectOptions: {
+      supportBigNumbers: true,
+      bigNumberStrings: true,
+      ssl: {
+        rejectUnauthorized: false
+      },
+      waitForConnections: true,
+      enableKeepAlive: true,
+      decimalNumbers: true,
+    },
   }
 );
 
@@ -45,7 +44,11 @@ export const initDB = async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ MySQL connection established successfully.");
+    
+    // Sync models - create tables if they don't exist
+    await sequelize.sync({ alter: false, force: false });
+    console.log("✅ Database tables synced.");
   } catch (error) {
-    console.error("❌ Database connection failed:", error.message);
+    console.error("❌ Database error:", error.message);
   }
 };
