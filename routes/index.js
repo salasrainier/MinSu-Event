@@ -9,7 +9,7 @@ import {
   dashboardAdmin, 
   approveEvent, 
   denyEvent 
-} from "../controllers/eventrequestController.js";
+} from "../controllers/eventrequestcontroller.js";
 import { analyticsPage } from "../controllers/analyticsController.js";
 import { isAdmin, isLoggedIn } from "../middleware/isAdmin.js";
 
