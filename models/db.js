@@ -8,7 +8,7 @@
 import { Sequelize } from "sequelize";
 
 export const sequelize = new Sequelize(
-  process.env.DB_NAME || "content_event_system",
+  process.env.DB_NAME || "railway",
   process.env.DB_USER || "root",
   process.env.DB_PASSWORD || "",
   {
@@ -16,6 +16,11 @@ export const sequelize = new Sequelize(
     port: parseInt(process.env.DB_PORT) || 3306,
     dialect: "mysql",
     logging: false,
+    timezone: '+00:00',
+    define: {
+      timestamps: true,
+      underscored: true,
+    },
     pool: {
       max: 5,
       min: 0,
@@ -25,29 +30,25 @@ export const sequelize = new Sequelize(
     dialectOptions: {
       supportBigNumbers: true,
       bigNumberStrings: true,
-      ssl: process.env.NODE_ENV === 'production' ? 'Amazon RDS' : false,
+      ssl: {
+        rejectUnauthorized: false
+      },
       waitForConnections: true,
       enableKeepAlive: true,
+      decimalNumbers: true,
     },
   }
 );
 
-// ✅ Initialize database connection and auto-sync models
 export const initDB = async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ MySQL connection established successfully.");
-
-    // Automatically create missing tables (without altering existing ones to avoid key limit issues)
-    await sequelize.sync({ force: false, alter: false });
-    console.log("✅ All models synchronized successfully.");
+    
+    // Sync models - create tables if they don't exist
+    await sequelize.sync({ alter: false, force: false });
+    console.log("✅ Database tables synced.");
   } catch (error) {
-    // Log the error but don't crash - app can continue
-    if (error.message && error.message.includes("offset")) {
-      console.log("⚠️  Database offset issue (Aiven bug) - this is non-critical");
-    } else {
-      console.error("⚠️  Database connection error:", error.message.substring(0, 80));
-    }
+    console.error("❌ Database error:", error.message);
   }
 };
-
