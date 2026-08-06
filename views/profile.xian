@@ -120,8 +120,8 @@
               <p class="text-xs text-gray-500 mt-1">💡 For organizers: Your department</p>
             </div>
 
-            <!-- Course (for participants) -->
-            <div>
+            <!-- Course (for participants only) -->
+            <div {{#ifCond user.role '!==' 'organizer'}}{{else}}style="display:none;"{{/ifCond}}>
               <label class="block text-sm font-bold text-gray-700 mb-2">
                 <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z" />
@@ -138,8 +138,8 @@
               <p class="text-xs text-gray-500 mt-1">💡 For participants: Your course/program</p>
             </div>
 
-            <!-- Year Level (for participants) -->
-            <div>
+            <!-- Year Level (for participants only) -->
+            <div {{#ifCond user.role '!==' 'organizer'}}{{else}}style="display:none;"{{/ifCond}}>
               <label class="block text-sm font-bold text-gray-700 mb-2">
                 <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
