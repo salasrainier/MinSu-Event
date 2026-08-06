@@ -16,7 +16,7 @@ export const sequelize = new Sequelize(
     port: parseInt(process.env.DB_PORT) || 3306,
     dialect: "mysql",
     logging: false,
-    timezone: 'Z',
+    timezone: '+00:00',
     define: {
       timestamps: true,
       underscored: true,
