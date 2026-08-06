@@ -100,7 +100,7 @@ export const loginUser = async (req, res) => {
    REGISTER ACTION
 ───────────────────────────── */
 export const registerUser = async (req, res) => {
-  const { name, email, password, role, department } = req.body || {};
+  const { name, email, password, role, department, course, year } = req.body || {};
 
   try {
     if (!name || !email || !password || !role) {
@@ -121,6 +121,14 @@ export const registerUser = async (req, res) => {
     // Organizers must provide department
     if (role === "organizer" && !department) {
       const msg = "Department is required for organizers.";
+      if (isAjax(req)) return res.json({ success: false, message: `❌ ${msg}` });
+      req.flash("error_msg", msg);
+      return res.redirect("/auth/register");
+    }
+
+    // Participants should provide course and year
+    if (role === "participant" && (!course || !year)) {
+      const msg = "Course and Year are required for participants.";
       if (isAjax(req)) return res.json({ success: false, message: `❌ ${msg}` });
       req.flash("error_msg", msg);
       return res.redirect("/auth/register");
@@ -155,7 +163,9 @@ export const registerUser = async (req, res) => {
       email, 
       password: hashedPassword, 
       role: role,
-      department: role === "organizer" ? department : null
+      department: role === "organizer" ? department : null,
+      course: role === "participant" ? course : null,
+      year: role === "participant" ? year : null
     });
 
     const successMsg = "✅ Registration successful! Please login.";

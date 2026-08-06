@@ -6,6 +6,12 @@ import { Reaction } from '../models/Reaction.js';
 import { Comment } from '../models/Comment.js';
 import { User } from '../models/userModel.js';
 import { Op } from 'sequelize';
+import {
+  getEventParticipants,
+  markAttendance,
+  unmarkAttendance,
+  getAttendanceStats
+} from '../controllers/attendanceController.js';
 
 const router = express.Router();
 
@@ -246,5 +252,18 @@ router.get('/booked-dates', isLoggedIn, async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch booked dates' });
   }
 });
+
+// ✅ ATTENDANCE TRACKING ROUTES
+// Get all participants for an event
+router.get('/attendance/participants/:eventId', isLoggedIn, getEventParticipants);
+
+// Mark participant as attended
+router.post('/attendance/mark', isLoggedIn, markAttendance);
+
+// Mark participant as not attended
+router.post('/attendance/unmark', isLoggedIn, unmarkAttendance);
+
+// Get attendance statistics
+router.get('/attendance/stats', isLoggedIn, getAttendanceStats);
 
 export default router;

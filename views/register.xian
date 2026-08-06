@@ -74,6 +74,30 @@
           </div>
         </div>
 
+        <!-- Course Field (for participants) -->
+        <div class="group hidden" id="courseGroup">
+          <label for="regCourse" class="block text-sm font-semibold text-green-900 mb-2.5">Course/Program</label>
+          <div class="relative">
+            <input type="text" id="regCourse" name="course" placeholder="e.g., BS Information Technology" autocomplete="off"
+                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300" />
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Year Field (for participants) -->
+        <div class="group hidden" id="yearGroup">
+          <label for="regYear" class="block text-sm font-semibold text-green-900 mb-2.5">Year Level</label>
+          <select id="regYear" name="year" class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300">
+            <option value="">Select your year...</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+        </div>
+
         <!-- Password Field -->
         <div class="group">
           <label for="regPassword" class="block text-sm font-semibold text-green-900 mb-2.5">Password</label>
@@ -155,16 +179,22 @@ regToggleBtn.addEventListener("click", (e) => {
   setTimeout(() => regToggleBtn.classList.remove("scale-110"), 200);
 });
 
-// Toggle department field based on role
+// Toggle department, course, and year fields based on role
 const roleInputs = document.querySelectorAll('input[name="role"]');
 const departmentGroup = document.getElementById('departmentGroup');
+const courseGroup = document.getElementById('courseGroup');
+const yearGroup = document.getElementById('yearGroup');
 
 roleInputs.forEach(input => {
   input.addEventListener('change', (e) => {
     if (e.target.value === 'organizer') {
       departmentGroup.classList.remove('hidden');
+      courseGroup.classList.add('hidden');
+      yearGroup.classList.add('hidden');
     } else {
       departmentGroup.classList.add('hidden');
+      courseGroup.classList.remove('hidden');
+      yearGroup.classList.remove('hidden');
     }
   });
 });
@@ -194,7 +224,9 @@ regForm.addEventListener("submit",async(e)=>{
         email:fd.get("email"),
         password:fd.get("password"),
         role:fd.get("role"),
-        department:fd.get("department")
+        department:fd.get("department"),
+        course:fd.get("course"),
+        year:fd.get("year")
       })
     });
 

@@ -62,7 +62,15 @@ export const User = sequelize.define(
     },
     department: {
       type: DataTypes.STRING,
-      allowNull: true, // optional, e.g., "CCS", "HM", "Education"
+      allowNull: true, // e.g., "CCS", "HM", "Education"
+    },
+    course: {
+      type: DataTypes.STRING,
+      allowNull: true, // e.g., "BS Information Technology", "BS Hospitality"
+    },
+    year: {
+      type: DataTypes.STRING,
+      allowNull: true, // e.g., "1st Year", "2nd Year", "3rd Year", "4th Year"
     },
     contact_number: {
       type: DataTypes.STRING,
