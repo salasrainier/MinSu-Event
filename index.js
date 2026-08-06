@@ -166,8 +166,15 @@ app.use("/debug", debugRoutes);
 /* ──────────────────────────────
    DATABASE SYNC & MIGRATION
 ────────────────────────────── */
-// Database sync is disabled - tables already exist in Aiven
-// Just authenticate to verify connection
+(async () => {
+  try {
+    await sequelize.sync({ alter: false, force: false });
+    console.log("✅ Database synced!");
+  } catch (err) {
+    console.log("ℹ️  Sync note:", err.message.substring(0, 100));
+  }
+})();
+
 
 
 /* ──────────────────────────────
