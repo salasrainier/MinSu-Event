@@ -168,35 +168,12 @@ app.use("/debug", debugRoutes);
 ────────────────────────────── */
 (async () => {
   try {
-    const { QueryTypes } = await import('sequelize');
-    
-    // Step 1: Update old "user" roles to "participant" 
-    try {
-      await sequelize.query(
-        "UPDATE Users SET role = 'participant' WHERE role = 'user' OR role IS NULL",
-        { type: QueryTypes.UPDATE }
-      );
-      console.log("✅ Migrated old user roles to participant");
-    } catch (e) {
-      // Table might not exist yet, continue
-    }
-    
-    // Step 2: Directly modify the ENUM column before model sync
-    try {
-      await sequelize.query(
-        "ALTER TABLE Users MODIFY role ENUM('participant', 'organizer', 'admin') DEFAULT 'participant'"
-      );
-      console.log("✅ Updated Users table ENUM");
-    } catch (e) {
-      // Column might already be correct, continue
-      console.log("ℹ️ ENUM update skipped (table may not exist or already correct)");
-    }
-    
-    // Step 3: Now safe to sync remaining models
-    await sequelize.sync({ alter: true, force: false });
-    console.log("✅ Database synced!");
+    // Simply sync all models - let Sequelize handle table creation
+    await sequelize.sync({ alter: false, force: false });
+    console.log("✅ Database synced successfully!");
   } catch (err) {
     console.error("❌ DB sync error:", err.message);
+    console.error("This is not critical - app will continue running");
   }
 })();
 
