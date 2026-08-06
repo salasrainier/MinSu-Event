@@ -51,7 +51,7 @@ export const viewForm = (req, res) => {
 ────────────────────────────── */
 export const submitEvent = async (req, res) => {
   try {
-    const { event_title, department, event_date, event_end_date, venue, purpose } = req.body;
+    const { event_title, department, event_date, event_end_date, venue, purpose, allowed_courses } = req.body;
 
     // ── Proposal document required ───────────────────────────
     const proposal_file = req.files?.proposal_file?.[0]
@@ -92,6 +92,14 @@ export const submitEvent = async (req, res) => {
       ? `/uploads/${req.files.event_video[0].filename}`
       : null;
 
+    // ── allowed_courses — convert to array if needed ──────────
+    let allowedCoursesArray = ["All Courses (Public Event)"];
+    if (allowed_courses) {
+      allowedCoursesArray = Array.isArray(allowed_courses) 
+        ? allowed_courses 
+        : [allowed_courses];
+    }
+
     await EventRequest.create({
       organizer_name: req.session.user.name,
       event_title,
@@ -103,6 +111,7 @@ export const submitEvent = async (req, res) => {
       proposal_file,
       event_images,
       event_video,
+      allowed_courses: allowedCoursesArray,
       status: "Pending",
       user_id: req.session.user.id,
     });

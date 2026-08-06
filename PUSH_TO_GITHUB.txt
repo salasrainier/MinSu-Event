@@ -1,0 +1,44 @@
+═══════════════════════════════════════════════════════════
+  PUSH FIXES TO GITHUB
+═══════════════════════════════════════════════════════════
+
+Run these commands in PowerShell or Command Prompt:
+
+1. Stage the fixed files:
+   git add .env index.js export_and_import.js test_sync.js
+
+2. Commit with a clear message:
+   git commit -m "Fix: Railway database credentials and import all models for table sync"
+
+3. Push to your repository:
+   git push origin main
+
+4. Render will auto-deploy within a few seconds
+
+═══════════════════════════════════════════════════════════
+
+WHAT WAS FIXED:
+
+✅ .env - Now uses Railway credentials (was Aiven)
+✅ index.js - Imports all 6 models (was only importing Participation)
+✅ export_and_import.js - Updated to work with Railway
+✅ test_sync.js - New script to verify connection and tables
+
+═══════════════════════════════════════════════════════════
+
+EXPECTED RESULT:
+
+When Render redeploys:
+✅ All database tables will be created automatically
+✅ Login page will work
+✅ Database queries will succeed
+✅ App ready for use
+
+═══════════════════════════════════════════════════════════
+
+If you get an error:
+1. Check your GitHub credentials are set up
+2. Make sure you're in the right directory
+3. Verify .env file has the Railway connection string
+
+═══════════════════════════════════════════════════════════

@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
 import { User } from "./userModel.js"; // import User model
+import { ALL_COURSES, EVENT_ACCESS_OPTIONS } from "../constants/courseDepartments.js";
 
 export const EventRequest = sequelize.define(
   "EventRequest",
@@ -91,6 +92,12 @@ export const EventRequest = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false,
+    },
+    allowed_courses: { // JSON array of courses allowed to attend, or "All"
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: ["All Courses (Public Event)"],
+      comment: "Array of course names allowed to join, or ['All Courses (Public Event)'] for public events"
     },
   },
   {

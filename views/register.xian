@@ -78,10 +78,45 @@
         <div class="group hidden" id="courseGroup">
           <label for="regCourse" class="block text-sm font-semibold text-green-900 mb-2.5">Course/Program</label>
           <div class="relative">
-            <input type="text" id="regCourse" name="course" placeholder="e.g., BS Information Technology" autocomplete="off"
-                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300" />
-            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <select id="regCourse" name="course" 
+                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300 appearance-none">
+              <option value="">Select your course...</option>
+              <!-- College of Arts and Sciences -->
+              <optgroup label="College of Arts and Sciences">
+                <option value="Bachelor of Arts in Political Science (AB Political Science)">Bachelor of Arts in Political Science (AB Political Science)</option>
+              </optgroup>
+              <!-- College of Business and Management -->
+              <optgroup label="College of Business and Management">
+                <option value="Bachelor of Science in Entrepreneurship (BS Entrepreneurship)">Bachelor of Science in Entrepreneurship (BS Entrepreneurship)</option>
+                <option value="Bachelor of Science in Tourism Management (BS Tourism Management)">Bachelor of Science in Tourism Management (BS Tourism Management)</option>
+                <option value="Bachelor of Science in Hospitality Management (BS Hospitality Management)">Bachelor of Science in Hospitality Management (BS Hospitality Management)</option>
+              </optgroup>
+              <!-- College of Computer Studies -->
+              <optgroup label="College of Computer Studies">
+                <option value="Bachelor of Science in Information Technology (BSIT)">Bachelor of Science in Information Technology (BSIT)</option>
+                <option value="Bachelor of Science in Computer Engineering (BSCpE)">Bachelor of Science in Computer Engineering (BSCpE)</option>
+              </optgroup>
+              <!-- College of Criminal Justice Education -->
+              <optgroup label="College of Criminal Justice Education">
+                <option value="Bachelor of Science in Criminology (BSCrim)">Bachelor of Science in Criminology (BSCrim)</option>
+              </optgroup>
+              <!-- College of Teacher Education -->
+              <optgroup label="College of Teacher Education">
+                <option value="Bachelor of Elementary Education (BEEd)">Bachelor of Elementary Education (BEEd)</option>
+                <option value="Bachelor of Secondary Education (BSEd) - Major in English">Bachelor of Secondary Education (BSEd) - Major in English</option>
+                <option value="Bachelor of Secondary Education (BSEd) - Major in Mathematics">Bachelor of Secondary Education (BSEd) - Major in Mathematics</option>
+                <option value="Bachelor of Secondary Education (BSEd) - Major in Science">Bachelor of Secondary Education (BSEd) - Major in Science</option>
+              </optgroup>
+              <!-- Institute of Fisheries -->
+              <optgroup label="Institute of Fisheries">
+                <option value="Bachelor of Science in Fisheries (BS Fisheries)">Bachelor of Science in Fisheries (BS Fisheries)</option>
+              </optgroup>
+            </select>
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z" />
+            </svg>
+            <svg class="absolute right-3 top-3.5 w-5 h-5 text-green-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </div>
         </div>

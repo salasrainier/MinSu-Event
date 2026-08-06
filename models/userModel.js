@@ -33,6 +33,7 @@
 
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js"; // ✅ Import your sequelize instance
+import { ALL_COURSES } from "../constants/courseDepartments.js";
 
 export const User = sequelize.define(
   "User",
@@ -65,7 +66,7 @@ export const User = sequelize.define(
       allowNull: true, // e.g., "CCS", "HM", "Education"
     },
     course: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM(...ALL_COURSES),
       allowNull: true, // e.g., "BS Information Technology", "BS Hospitality"
     },
     year: {

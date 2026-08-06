@@ -80,10 +80,11 @@ try {
   
   for (const user of testUsers) {
     try {
+      const now = new Date();
       await railway.execute(
-        `INSERT INTO Users (name, email, password, role, department, contact_number, status) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [user.name, user.email, user.password, user.role, user.department, user.contact_number, user.status]
+        `INSERT INTO Users (name, email, password, role, department, contact_number, status, created_at, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [user.name, user.email, user.password, user.role, user.department, user.contact_number, user.status, now, now]
       );
       console.log(`  ✅ ${user.email}`);
     } catch (err) {

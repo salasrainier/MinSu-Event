@@ -18,7 +18,11 @@ const router = express.Router();
 // ✅ Get approved events for participants to browse
 router.get('/browse-events', isLoggedIn, async (req, res) => {
   try {
+    const userId = req.session.user.id;
     const { search, department } = req.query;
+    
+    // Get user's course to filter events
+    const user = await User.findByPk(userId);
     
     let whereClause = { status: 'Approved' };
     
@@ -37,10 +41,18 @@ router.get('/browse-events', isLoggedIn, async (req, res) => {
       order: [['event_date', 'ASC']]
     });
 
+    // Filter events based on user's course
+    const filteredEvents = events.filter(event => {
+      const allowedCourses = event.allowed_courses || ["All Courses (Public Event)"];
+      const isPublic = allowedCourses.includes("All Courses (Public Event)");
+      const isAllowed = allowedCourses.includes(user?.course);
+      return isPublic || isAllowed;
+    });
+
     res.json({
       success: true,
-      events: events,
-      count: events.length
+      events: filteredEvents,
+      count: filteredEvents.length
     });
   } catch (error) {
     console.error('Browse events error:', error);

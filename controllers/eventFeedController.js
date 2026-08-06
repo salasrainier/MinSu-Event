@@ -292,6 +292,27 @@ export const joinEvent = async (req, res) => {
       });
     }
 
+    // ── Check if user's course is allowed to join ────────────
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const allowedCourses = event.allowed_courses || ["All Courses (Public Event)"];
+    const isPublicEvent = allowedCourses.includes("All Courses (Public Event)");
+    const isUserCourseAllowed = allowedCourses.includes(user.course);
+
+    if (!isPublicEvent && !isUserCourseAllowed) {
+      console.log(`   ❌ Course not allowed. User: ${user.course}, Allowed: ${JSON.stringify(allowedCourses)}`);
+      return res.json({
+        success: false,
+        message: `❌ You cannot join this event. It is only open to: ${allowedCourses.join(", ")}`,
+      });
+    }
+
     // Create participation record
     await Participation.create({
       user_id: userId,
