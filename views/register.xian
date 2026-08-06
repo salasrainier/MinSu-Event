@@ -64,12 +64,23 @@
 
         <!-- Department Field (for organizers) -->
         <div class="group hidden" id="departmentGroup">
-          <label for="regDepartment" class="block text-sm font-semibold text-green-900 mb-2.5">Department/Office</label>
+          <label for="regDepartment" class="block text-sm font-semibold text-green-900 mb-2.5">Department/College</label>
           <div class="relative">
-            <input type="text" id="regDepartment" name="department" placeholder="e.g., CCS, HM, Education" autocomplete="organization"
-                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300" />
-            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <select id="regDepartment" name="department"
+                   class="w-full px-4 py-3.5 pl-11 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 bg-white hover:border-green-300 appearance-none">
+              <option value="">Select your college...</option>
+              <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+              <option value="College of Business and Management">College of Business and Management</option>
+              <option value="College of Computer Studies">College of Computer Studies</option>
+              <option value="College of Criminal Justice Education">College of Criminal Justice Education</option>
+              <option value="College of Teacher Education">College of Teacher Education</option>
+              <option value="Institute of Fisheries">Institute of Fisheries</option>
+            </select>
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-green-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <svg class="absolute right-3 top-3.5 w-5 h-5 text-green-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </div>
         </div>

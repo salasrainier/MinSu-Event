@@ -102,44 +102,78 @@
               <input type="email" name="email" value="{{user.email}}" required class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition font-medium" />
             </div>
 
-            <!-- Department -->
-            <div>
+            <!-- Department (for organizers) -->
+            <div {{#ifCond user.role '===' 'participant'}}style="display:none;"{{/ifCond}}>
               <label class="block text-sm font-bold text-gray-700 mb-2">
                 <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
-                Department/Office
+                Department/College
               </label>
-              <input 
-                type="text" 
+              <select 
                 name="department" 
-                value="{{user.department}}" 
-                placeholder="e.g., CCS, HM, Education"
-                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition font-medium" 
-              />
-              <p class="text-xs text-gray-500 mt-1">💡 For organizers: Your department</p>
+                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition font-medium appearance-none"
+              >
+                <option value="">Select your college...</option>
+                <option value="College of Arts and Sciences" {{#ifCond user.department '===' 'College of Arts and Sciences'}}selected{{/ifCond}}>College of Arts and Sciences</option>
+                <option value="College of Business and Management" {{#ifCond user.department '===' 'College of Business and Management'}}selected{{/ifCond}}>College of Business and Management</option>
+                <option value="College of Computer Studies" {{#ifCond user.department '===' 'College of Computer Studies'}}selected{{/ifCond}}>College of Computer Studies</option>
+                <option value="College of Criminal Justice Education" {{#ifCond user.department '===' 'College of Criminal Justice Education'}}selected{{/ifCond}}>College of Criminal Justice Education</option>
+                <option value="College of Teacher Education" {{#ifCond user.department '===' 'College of Teacher Education'}}selected{{/ifCond}}>College of Teacher Education</option>
+                <option value="Institute of Fisheries" {{#ifCond user.department '===' 'Institute of Fisheries'}}selected{{/ifCond}}>Institute of Fisheries</option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">💡 For organizers: Your college/department</p>
             </div>
 
             <!-- Course (for participants only) -->
-            <div {{#ifCond user.role '!==' 'organizer'}}{{else}}style="display:none;"{{/ifCond}}>
+            <div {{#ifCond user.role '!==' 'participant'}}style="display:none;"{{/ifCond}}>
               <label class="block text-sm font-bold text-gray-700 mb-2">
                 <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z" />
                 </svg>
                 Course/Program
               </label>
-              <input 
-                type="text" 
+              <select 
                 name="course" 
-                value="{{user.course}}" 
-                placeholder="e.g., BS Information Technology"
-                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition font-medium" 
-              />
+                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition font-medium appearance-none"
+              >
+                <option value="">Select your course...</option>
+                <!-- College of Arts and Sciences -->
+                <optgroup label="College of Arts and Sciences">
+                  <option value="Bachelor of Arts in Political Science (AB Political Science)" {{#ifCond user.course '===' 'Bachelor of Arts in Political Science (AB Political Science)'}}selected{{/ifCond}}>Bachelor of Arts in Political Science (AB Political Science)</option>
+                </optgroup>
+                <!-- College of Business and Management -->
+                <optgroup label="College of Business and Management">
+                  <option value="Bachelor of Science in Entrepreneurship (BS Entrepreneurship)" {{#ifCond user.course '===' 'Bachelor of Science in Entrepreneurship (BS Entrepreneurship)'}}selected{{/ifCond}}>Bachelor of Science in Entrepreneurship (BS Entrepreneurship)</option>
+                  <option value="Bachelor of Science in Tourism Management (BS Tourism Management)" {{#ifCond user.course '===' 'Bachelor of Science in Tourism Management (BS Tourism Management)'}}selected{{/ifCond}}>Bachelor of Science in Tourism Management (BS Tourism Management)</option>
+                  <option value="Bachelor of Science in Hospitality Management (BS Hospitality Management)" {{#ifCond user.course '===' 'Bachelor of Science in Hospitality Management (BS Hospitality Management)'}}selected{{/ifCond}}>Bachelor of Science in Hospitality Management (BS Hospitality Management)</option>
+                </optgroup>
+                <!-- College of Computer Studies -->
+                <optgroup label="College of Computer Studies">
+                  <option value="Bachelor of Science in Information Technology (BSIT)" {{#ifCond user.course '===' 'Bachelor of Science in Information Technology (BSIT)'}}selected{{/ifCond}}>Bachelor of Science in Information Technology (BSIT)</option>
+                  <option value="Bachelor of Science in Computer Engineering (BSCpE)" {{#ifCond user.course '===' 'Bachelor of Science in Computer Engineering (BSCpE)'}}selected{{/ifCond}}>Bachelor of Science in Computer Engineering (BSCpE)</option>
+                </optgroup>
+                <!-- College of Criminal Justice Education -->
+                <optgroup label="College of Criminal Justice Education">
+                  <option value="Bachelor of Science in Criminology (BSCrim)" {{#ifCond user.course '===' 'Bachelor of Science in Criminology (BSCrim)'}}selected{{/ifCond}}>Bachelor of Science in Criminology (BSCrim)</option>
+                </optgroup>
+                <!-- College of Teacher Education -->
+                <optgroup label="College of Teacher Education">
+                  <option value="Bachelor of Elementary Education (BEEd)" {{#ifCond user.course '===' 'Bachelor of Elementary Education (BEEd)'}}selected{{/ifCond}}>Bachelor of Elementary Education (BEEd)</option>
+                  <option value="Bachelor of Secondary Education (BSEd) - Major in English" {{#ifCond user.course '===' 'Bachelor of Secondary Education (BSEd) - Major in English'}}selected{{/ifCond}}>Bachelor of Secondary Education (BSEd) - Major in English</option>
+                  <option value="Bachelor of Secondary Education (BSEd) - Major in Mathematics" {{#ifCond user.course '===' 'Bachelor of Secondary Education (BSEd) - Major in Mathematics'}}selected{{/ifCond}}>Bachelor of Secondary Education (BSEd) - Major in Mathematics</option>
+                  <option value="Bachelor of Secondary Education (BSEd) - Major in Science" {{#ifCond user.course '===' 'Bachelor of Secondary Education (BSEd) - Major in Science'}}selected{{/ifCond}}>Bachelor of Secondary Education (BSEd) - Major in Science</option>
+                </optgroup>
+                <!-- Institute of Fisheries -->
+                <optgroup label="Institute of Fisheries">
+                  <option value="Bachelor of Science in Fisheries (BS Fisheries)" {{#ifCond user.course '===' 'Bachelor of Science in Fisheries (BS Fisheries)'}}selected{{/ifCond}}>Bachelor of Science in Fisheries (BS Fisheries)</option>
+                </optgroup>
+              </select>
               <p class="text-xs text-gray-500 mt-1">💡 For participants: Your course/program</p>
             </div>
 
             <!-- Year Level (for participants only) -->
-            <div {{#ifCond user.role '!==' 'organizer'}}{{else}}style="display:none;"{{/ifCond}}>
+            <div {{#ifCond user.role '!==' 'participant'}}style="display:none;"{{/ifCond}}>
               <label class="block text-sm font-bold text-gray-700 mb-2">
                 <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
