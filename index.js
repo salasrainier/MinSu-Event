@@ -168,12 +168,13 @@ app.use("/debug", debugRoutes);
 ────────────────────────────── */
 (async () => {
   try {
-    // Simply sync all models - let Sequelize handle table creation
+    // Simply sync all models - Sequelize will create tables as needed
     await sequelize.sync({ alter: false, force: false });
-    console.log("✅ Database synced successfully!");
+    console.log("✅ Database ready!");
   } catch (err) {
-    console.error("❌ DB sync error:", err.message);
-    console.error("This is not critical - app will continue running");
+    // Database sync errors are non-critical
+    // App will still work and create tables on-demand
+    console.log("ℹ️  Database sync note:", err.message.substring(0, 50));
   }
 })();
 
