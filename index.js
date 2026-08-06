@@ -193,7 +193,7 @@ app.use("/debug", debugRoutes);
     }
     
     // Step 3: Now safe to sync remaining models
-    await sequelize.sync({ alter: false });
+    await sequelize.sync({ alter: true, force: false });
     console.log("✅ Database synced!");
   } catch (err) {
     console.error("❌ DB sync error:", err.message);
