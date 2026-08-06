@@ -172,9 +172,14 @@ app.use("/debug", debugRoutes);
     await sequelize.sync({ alter: false, force: false });
     console.log("✅ Database ready!");
   } catch (err) {
-    // Database sync errors are non-critical
+    // Database sync errors are non-critical for local Laragon
     // App will still work and create tables on-demand
-    console.log("ℹ️  Database sync note:", err.message.substring(0, 50));
+    if (err.message && err.message.includes("offset")) {
+      console.log("⚠️  SOLUTION: Switch to local MySQL via Cloudflare Tunnel");
+      console.log("   See CLOUDFLARE_TUNNEL_SETUP.md for instructions");
+    } else {
+      console.log("⚠️  Database sync note:", err.message.substring(0, 50));
+    }
   }
 })();
 
