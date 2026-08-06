@@ -19,6 +19,7 @@ export const sequelize = new Sequelize(
     dialectOptions: {
       supportBigNumbers: true,
       bigNumberStrings: true,
+      ssl: process.env.NODE_ENV === 'production' ? 'Amazon RDS' : false,
     },
   }
 );
