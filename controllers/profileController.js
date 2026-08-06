@@ -65,7 +65,7 @@ export const updateProfile = async (req, res) => {
       return res.redirect("/login");
     }
 
-    const { name, email, department } = req.body;
+    const { name, email, department, course, year } = req.body;
     // Handle both id and user_id in session
     const userId = req.session.user.user_id || req.session.user.id;
 
@@ -73,6 +73,8 @@ export const updateProfile = async (req, res) => {
     console.log(`   Name: ${name}`);
     console.log(`   Email: ${email}`);
     console.log(`   Department: ${department}`);
+    console.log(`   Course: ${course}`);
+    console.log(`   Year: ${year}`);
     console.log(`   Request body:`, req.body);
 
     // Check if email is already taken by another user
@@ -85,9 +87,9 @@ export const updateProfile = async (req, res) => {
       return res.redirect("/profile");
     }
 
-    // Update user
+    // Update user with all fields
     const [updateCount] = await User.update(
-      { name, email, department },
+      { name, email, department, course, year },
       { where: { user_id: userId } }
     );
 
@@ -97,6 +99,8 @@ export const updateProfile = async (req, res) => {
     req.session.user.name = name;
     req.session.user.email = email;
     req.session.user.department = department;
+    req.session.user.course = course;
+    req.session.user.year = year;
 
     // Save session explicitly
     await new Promise((resolve, reject) => {
@@ -108,7 +112,7 @@ export const updateProfile = async (req, res) => {
 
     console.log(`✅ Profile updated successfully`);
     console.log(`   Session updated:`, req.session.user);
-    req.flash("success_msg", "Profile updated successfully!");
+    req.flash("success_msg", "✅ Profile updated successfully!");
     res.redirect("/profile");
   } catch (error) {
     console.error("❌ Profile update error:", error);

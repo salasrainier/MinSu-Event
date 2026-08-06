@@ -44,7 +44,7 @@ export const loginUser = async (req, res) => {
     }
 
     // Save user info in session
-    req.session.user = { id: user.user_id, name: user.name, email: user.email, role: user.role, department: user.department };
+    req.session.user = { id: user.user_id, name: user.name, email: user.email, role: user.role, department: user.department, course: user.course, year: user.year };
 
     console.log(`   ✅ User authenticated: ${user.name} (${user.role})`);
     console.log(`   📝 Session Set:`, req.session.user);
