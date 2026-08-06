@@ -15,7 +15,11 @@ import hbs from "hbs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { sequelize } from "./models/db.js";
+import { User } from "./models/userModel.js";
+import { EventRequest } from "./models/Eventrequest.js";
 import { Participation } from "./models/Participation.js";
+import { Comment } from "./models/Comment.js";
+import { Reaction } from "./models/Reaction.js";
 import moment from "moment";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -168,18 +172,10 @@ app.use("/debug", debugRoutes);
 ────────────────────────────── */
 (async () => {
   try {
-    // Simply sync all models - Sequelize will create tables as needed
     await sequelize.sync({ alter: false, force: false });
-    console.log("✅ Database ready!");
+    console.log("✅ Database synced!");
   } catch (err) {
-    // Database sync errors are non-critical for local Laragon
-    // App will still work and create tables on-demand
-    if (err.message && err.message.includes("offset")) {
-      console.log("⚠️  SOLUTION: Switch to local MySQL via Cloudflare Tunnel");
-      console.log("   See CLOUDFLARE_TUNNEL_SETUP.md for instructions");
-    } else {
-      console.log("⚠️  Database sync note:", err.message.substring(0, 50));
-    }
+    console.log("ℹ️  Sync note:", err.message.substring(0, 100));
   }
 })();
 
